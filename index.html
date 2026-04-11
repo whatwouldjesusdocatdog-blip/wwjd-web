@@ -10,12 +10,16 @@
     :root {
       --gold:       #D9B359;
       --gold-light: #F0D48A;
+      --gold-faint: #FBF4E0;
       --brown:      #402608;
       --cream:      #FAF5E5;
       --parchment:  #F2E8CC;
       --text:       #2D1A06;
       --muted:      #7A6040;
+      --muted-lt:   #B09878;
       --radius:     14px;
+      --radius-lg:  20px;
+      --shadow-lg:  0 24px 64px rgba(64,38,8,0.18);
     }
 
     /* ── Reset ── */
@@ -261,45 +265,133 @@
     footer a:hover { color: var(--brown); }
 
     /* ── Auth callback pages ── */
-    .auth-hero {
+    .auth-page {
+      min-height: calc(100vh - 60px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 5% 80px;
+      background: linear-gradient(160deg, var(--cream) 0%, var(--gold-faint) 100%);
+    }
+    .auth-card {
+      background: #fff;
+      border: 1px solid rgba(217,179,89,0.22);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      padding: 52px 48px 44px;
+      max-width: 520px;
+      width: 100%;
       text-align: center;
-      padding: 100px 5% 80px;
-      max-width: 600px;
-      margin: 0 auto;
     }
-    .auth-icon { font-size: 56px; margin-bottom: 24px; }
-    .auth-hero h1 {
+    /* Animated checkmark */
+    .check-ring {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 28px;
+    }
+    .check-ring .check-bg {
+      fill: var(--gold-faint);
+      stroke: none;
+    }
+    .check-ring .check-arc {
+      fill: none;
+      stroke: var(--gold);
+      stroke-width: 3;
+      stroke-dasharray: 226;
+      stroke-dashoffset: 226;
+      animation: ring-draw 0.65s cubic-bezier(0.4,0,0.2,1) 0.1s forwards;
+      transform-origin: 40px 40px;
+      transform: rotate(-90deg);
+    }
+    .check-ring polyline {
+      fill: none;
+      stroke: var(--gold);
+      stroke-width: 3.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-dasharray: 48;
+      stroke-dashoffset: 48;
+      animation: check-draw 0.4s cubic-bezier(0.4,0,0.2,1) 0.65s forwards;
+    }
+    @keyframes ring-draw  { to { stroke-dashoffset: 0; } }
+    @keyframes check-draw { to { stroke-dashoffset: 0; } }
+    .auth-card h1 {
       font-family: Georgia, serif;
-      font-size: clamp(28px, 4vw, 40px);
+      font-size: clamp(26px, 4vw, 34px);
       color: var(--brown);
-      margin-bottom: 16px;
+      margin-bottom: 12px;
+      letter-spacing: -0.01em;
     }
-    .auth-hero p {
+    .auth-card .auth-sub {
       font-size: 16px;
       color: var(--muted);
+      line-height: 1.7;
       margin-bottom: 32px;
     }
     .open-app-btn {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
+      gap: 9px;
       background: var(--gold);
       color: var(--brown);
       text-decoration: none;
-      padding: 14px 30px;
+      padding: 15px 34px;
       border-radius: 999px;
       font-size: 15px;
       font-weight: 700;
-      box-shadow: 0 4px 18px rgba(217,179,89,0.35);
-      transition: background 0.2s;
+      box-shadow: 0 4px 22px rgba(217,179,89,0.42);
+      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+      margin-bottom: 16px;
     }
-    .open-app-btn:hover { background: var(--gold-light); }
+    .open-app-btn:hover { background: var(--gold-light); transform: translateY(-2px); box-shadow: 0 8px 28px rgba(217,179,89,0.48); }
+    .auth-redirect-note {
+      font-size: 12px;
+      color: var(--muted-lt);
+      margin-bottom: 28px;
+      min-height: 18px;
+    }
+    .auth-redirect-note strong { color: var(--muted); }
+    .auth-verse {
+      border-top: 1px solid var(--parchment);
+      padding-top: 24px;
+    }
+    .auth-verse blockquote {
+      font-family: Georgia, serif;
+      font-style: italic;
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.75;
+      margin-bottom: 6px;
+    }
+    .auth-verse cite {
+      font-size: 12px;
+      font-style: normal;
+      font-weight: 600;
+      color: var(--gold);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    .auth-download-hint {
+      margin-top: 20px;
+      font-size: 13px;
+      color: var(--muted-lt);
+    }
+    .auth-download-hint a {
+      color: var(--gold);
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .auth-download-hint a:hover { text-decoration: underline; }
     .auth-footer {
       border-top: 1px solid var(--parchment);
-      padding: 24px;
+      padding: 20px;
       text-align: center;
-      color: var(--muted);
-      font-size: 13px;
+      color: var(--muted-lt);
+      font-size: 12px;
+    }
+    @media (max-width: 560px) {
+      .auth-card { padding: 40px 24px 36px; }
     }
 
     /* ── Responsive ── */
@@ -399,19 +491,69 @@
     }
 
     function renderEmailConfirmed() {
+      const link = deepLink();
       document.getElementById('page-content').innerHTML = `
-        <section class="auth-hero">
-          <div class="auth-icon">✅</div>
-          <h1>Email Confirmed!</h1>
-          <p>Your account is verified. Open the WWJD app on your iPhone to sign in and start your daily walk with Scripture.</p>
-          <a href="${deepLink()}" class="open-app-btn">Open the WWJD App</a>
-          <p style="margin-top:24px; font-size:13px; color:var(--muted)">
-            Don't have the app yet?
-            <a href="${APPSTORE_URL}" style="color:var(--gold); font-weight:600">Download it here.</a>
-          </p>
-        </section>
-        <div class="auth-footer">© ${new Date().getFullYear()} WWJD</div>
+        <div class="auth-page">
+          <div class="auth-card">
+
+            <svg class="check-ring" viewBox="0 0 80 80" aria-hidden="true">
+              <circle class="check-bg" cx="40" cy="40" r="36"/>
+              <circle class="check-arc" cx="40" cy="40" r="36"/>
+              <polyline points="24,41 35,52 56,30"/>
+            </svg>
+
+            <h1>Email Confirmed!</h1>
+            <p class="auth-sub">
+              You're all set. Your WWJD account is verified and ready to go.
+              Open the app on your iPhone to begin your daily walk with Scripture.
+            </p>
+
+            <a href="${link}" class="open-app-btn" id="open-app-link">
+              ${appleIcon} Open the WWJD App
+            </a>
+
+            <p class="auth-redirect-note" id="redirect-note">
+              Opening automatically in <strong id="countdown">5</strong>s&hellip;
+            </p>
+
+            <div class="auth-verse">
+              <blockquote>
+                "Therefore, if anyone is in Christ, the new creation has come:
+                the old has gone, the new is here!"
+              </blockquote>
+              <cite>2 Corinthians 5:17</cite>
+            </div>
+
+            <p class="auth-download-hint">
+              Don't have the app yet?
+              <a href="${APPSTORE_URL}">Download it on the App Store.</a>
+            </p>
+
+          </div>
+        </div>
+        <div class="auth-footer">© ${new Date().getFullYear()} WWJD &middot; Made with faith.</div>
       `;
+
+      /* Auto-open countdown */
+      let secs = 5;
+      const countEl = document.getElementById('countdown');
+      const noteEl  = document.getElementById('redirect-note');
+      const timer = setInterval(() => {
+        secs--;
+        if (secs <= 0) {
+          clearInterval(timer);
+          noteEl.textContent = 'Redirecting\u2026';
+          window.location.href = link;
+        } else {
+          countEl.textContent = secs;
+        }
+      }, 1000);
+
+      /* Cancel auto-redirect if user clicks manually */
+      document.getElementById('open-app-link').addEventListener('click', () => {
+        clearInterval(timer);
+        noteEl.textContent = '';
+      });
     }
 
     function renderPasswordReset() {
