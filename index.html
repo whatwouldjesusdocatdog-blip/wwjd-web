@@ -419,12 +419,16 @@
     const APP_SCHEME   = 'wwjd://login-callback';
     // ────────────────────────────────────────────────────
 
-    const hash        = window.location.hash.substring(1);
-    const params      = new URLSearchParams(hash);
-    const type        = params.get('type');
+    const hash         = window.location.hash.substring(1);
+    const hashParams   = new URLSearchParams(hash);
+    const queryParams  = new URLSearchParams(window.location.search);
+    const type         = hashParams.get('type');
+    const code         = queryParams.get('code');
 
     function deepLink() {
-      return APP_SCHEME + (hash ? '#' + hash : '');
+      // Forward both hash and query params to the app so it can exchange the code
+      const qs = window.location.search;
+      return APP_SCHEME + (qs ? qs : '') + (hash ? '#' + hash : '');
     }
 
     const appleIcon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
@@ -572,8 +576,10 @@
       `;
     }
 
-    // Route based on Supabase auth callback type
-    if (type === 'signup' || type === 'email_change') {
+    // Route based on Supabase auth callback
+    // PKCE flow:  ?code=...            (newer Supabase default)
+    // Legacy flow: #type=signup/email_change/recovery
+    if (code || type === 'signup' || type === 'email_change') {
       renderEmailConfirmed();
     } else if (type === 'recovery') {
       renderPasswordReset();
