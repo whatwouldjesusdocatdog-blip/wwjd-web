@@ -424,6 +424,8 @@
     const queryParams  = new URLSearchParams(window.location.search);
     const type         = hashParams.get('type');
     const code         = queryParams.get('code');
+    const error        = queryParams.get('error') || hashParams.get('error');
+    const errorCode    = queryParams.get('error_code') || hashParams.get('error_code');
 
     function deepLink() {
       // Forward both hash and query params to the app so it can exchange the code
@@ -576,12 +578,18 @@
       `;
     }
 
-    function renderLinkExpired() {
+    function renderLinkExpired(errorCode) {
+      const isExpired = !errorCode || errorCode === 'otp_expired';
+      const heading   = isExpired ? 'Link Expired'      : 'Link Invalid';
+      const message   = isExpired
+        ? 'This confirmation link has expired. Email links are single-use and valid for a limited time. Open the app and sign in again to receive a fresh link.'
+        : 'This confirmation link is invalid or has already been used. Open the app and sign in again to receive a new one.';
+
       document.getElementById('page-content').innerHTML = `
         <div class="auth-page">
           <div class="auth-card">
 
-            <svg class="check-ring" viewBox="0 0 80 80" aria-hidden="true" style="margin-bottom:28px">
+            <svg class="check-ring" viewBox="0 0 80 80" aria-hidden="true">
               <circle class="check-bg" cx="40" cy="40" r="36"/>
               <circle class="check-arc" cx="40" cy="40" r="36" style="stroke:#c0763a"/>
               <line x1="28" y1="28" x2="52" y2="52" stroke="#c0763a" stroke-width="3.5" stroke-linecap="round"
@@ -592,13 +600,10 @@
                 style="animation:check-draw 0.4s cubic-bezier(0.4,0,0.2,1) 0.75s forwards"/>
             </svg>
 
-            <h1 style="color:#7a3a10">Link Expired</h1>
-            <p class="auth-sub">
-              This confirmation link has already been used or has expired.
-              Check your inbox for a newer email, or sign up again to get a fresh link.
-            </p>
+            <h1 style="color:#7a3a10">${heading}</h1>
+            <p class="auth-sub">${message}</p>
 
-            <a href="${APPSTORE_URL}" class="open-app-btn">
+            <a href="${deepLink()}" class="open-app-btn">
               ${appleIcon} Open the WWJD App
             </a>
 
@@ -614,16 +619,12 @@
     }
 
     // Route based on Supabase auth callback
-    // PKCE flow:  ?code=...            (newer Supabase default)
-    // Legacy flow: #type=signup/email_change/recovery
-    const codeIsPlausible = code && /^[A-Za-z0-9_\-]{20,}$/.test(code);
-
-    if (codeIsPlausible || type === 'signup' || type === 'email_change') {
+    if (error) {
+      renderLinkExpired(errorCode);
+    } else if (code || type === 'signup' || type === 'email_change') {
       renderEmailConfirmed();
     } else if (type === 'recovery') {
       renderPasswordReset();
-    } else if (code) {
-      renderLinkExpired();
     } else {
       renderLanding();
     }
