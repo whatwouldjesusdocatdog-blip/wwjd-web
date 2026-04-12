@@ -787,10 +787,16 @@
       let routed = false;
       const routeTo = (fn) => { if (!routed) { routed = true; fn(); } };
 
-      // Listen BEFORE exchanging so we catch the event
+      // Listen BEFORE exchanging so we catch the event.
+      // Note: implicit flow fires SIGNED_IN (not PASSWORD_RECOVERY) on setSession,
+      // so fall back to checking the type param from the URL.
       sb.auth.onAuthStateChange((event) => {
-        if (event === 'PASSWORD_RECOVERY') routeTo(() => renderPasswordResetForm(sb));
-        else if (event === 'SIGNED_IN')     routeTo(renderEmailConfirmed);
+        if (event === 'PASSWORD_RECOVERY') {
+          routeTo(() => renderPasswordResetForm(sb));
+        } else if (event === 'SIGNED_IN') {
+          if (type === 'recovery') routeTo(() => renderPasswordResetForm(sb));
+          else routeTo(renderEmailConfirmed);
+        }
       });
 
       if (code) {
