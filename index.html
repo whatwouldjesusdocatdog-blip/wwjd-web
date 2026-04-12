@@ -803,15 +803,18 @@
           routeTo(renderEmailConfirmed);
         }
       } else if (hashParams.get('access_token')) {
-        // Older implicit-flow tokens (non-PKCE)
+        // Implicit-flow tokens — setSession fires SIGNED_IN regardless of type,
+        // so use the type param from the URL directly instead of the auth event.
         const { error: sessErr } = await sb.auth.setSession({
           access_token: hashParams.get('access_token'),
           refresh_token: hashParams.get('refresh_token') || ''
         });
         if (sessErr) {
           routeTo(() => renderLinkExpired('invalid'));
-        } else {
+        } else if (type === 'recovery') {
           routeTo(() => renderPasswordResetForm(sb));
+        } else {
+          routeTo(renderEmailConfirmed);
         }
       }
     }
