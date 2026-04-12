@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>WWJD — What Would Jesus Do?</title>
   <meta name="description" content="Daily Bible verses, AI-powered devotionals, and spiritual guidance. WWJD brings Scripture to life on your iPhone." />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
   <style>
     /* ── Tokens ── */
     :root {
@@ -390,11 +391,110 @@
       color: var(--muted-lt);
       font-size: 12px;
     }
+
+    /* ── Loading state ── */
+    .auth-loading {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 32px 0 16px;
+    }
+    .auth-spinner {
+      width: 44px;
+      height: 44px;
+      border: 3px solid var(--parchment);
+      border-top-color: var(--gold);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-bottom: 16px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .auth-loading p { font-size: 14px; color: var(--muted); }
+
+    /* ── Password reset form ── */
+    .auth-form { margin-top: 4px; text-align: left; }
+    .auth-field { margin-bottom: 16px; }
+    .auth-field label {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 7px;
+    }
+    .auth-field input {
+      width: 100%;
+      padding: 13px 16px;
+      border: 1.5px solid #e8dfc8;
+      border-radius: var(--radius);
+      font-size: 15px;
+      background: var(--cream);
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.18s, box-shadow 0.18s;
+    }
+    .auth-field input:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(217,179,89,0.15);
+    }
+    .auth-error-msg {
+      background: #fff5f2;
+      border: 1px solid #f4b8a5;
+      border-radius: 10px;
+      padding: 10px 14px;
+      color: #8b3520;
+      font-size: 13px;
+      margin-bottom: 14px;
+      text-align: left;
+    }
+    .auth-submit {
+      width: 100%;
+      background: var(--gold);
+      color: var(--brown);
+      border: none;
+      padding: 15px;
+      border-radius: 999px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 22px rgba(217,179,89,0.42);
+      transition: background 0.2s, transform 0.15s;
+      margin-top: 4px;
+    }
+    .auth-submit:hover:not(:disabled) { background: var(--gold-light); transform: translateY(-2px); }
+    .auth-submit:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+    .or-divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 22px 0 0;
+      color: var(--muted-lt);
+      font-size: 12px;
+    }
+    .or-divider::before, .or-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--parchment);
+    }
+    .open-app-link {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 14px;
+      font-size: 13px;
+      color: var(--gold);
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .open-app-link:hover { text-decoration: underline; }
+
+    /* ── Responsive ── */
     @media (max-width: 560px) {
       .auth-card { padding: 40px 24px 36px; }
     }
-
-    /* ── Responsive ── */
     @media (max-width: 600px) {
       nav { flex-direction: column; gap: 14px; }
       .hero { padding: 48px 5% 40px; }
@@ -414,21 +514,23 @@
   <div id="page-content"></div>
 
   <script>
-    // ─── Config — update these when the app goes live ───
-    const APPSTORE_URL = '#'; // Replace with App Store link
-    const APP_SCHEME   = 'wwjd://login-callback';
-    // ────────────────────────────────────────────────────
+    // ─── Config — update these when the app goes live ───────────
+    const APPSTORE_URL      = '#'; // Replace with App Store link
+    const APP_SCHEME        = 'wwjd://login-callback';
+    // Get both values from Supabase dashboard → Project Settings → API
+    const SUPABASE_URL      = 'https://zyufdzqmvwrhtmiwpuka.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp5dWZkenFtdndyaHRtaXdwdWthIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2MzYzNzYsImV4cCI6MjA4OTIxMjM3Nn0.6AxctB-RJbi1Kskc_mbw42F8o6JyM5scs27xvayiaTI';
+    // ────────────────────────────────────────────────────────────
 
-    const hash         = window.location.hash.substring(1);
-    const hashParams   = new URLSearchParams(hash);
-    const queryParams  = new URLSearchParams(window.location.search);
-    const type         = queryParams.get('type') || hashParams.get('type');
-    const code         = queryParams.get('code');
-    const error        = queryParams.get('error') || hashParams.get('error');
-    const errorCode    = queryParams.get('error_code') || hashParams.get('error_code');
+    const hash        = window.location.hash.substring(1);
+    const hashParams  = new URLSearchParams(hash);
+    const queryParams = new URLSearchParams(window.location.search);
+    const type        = queryParams.get('type') || hashParams.get('type');
+    const code        = queryParams.get('code');
+    const error       = queryParams.get('error') || hashParams.get('error');
+    const errorCode   = queryParams.get('error_code') || hashParams.get('error_code');
 
     function deepLink() {
-      // Forward both hash and query params to the app so it can exchange the code
       const qs = window.location.search;
       return APP_SCHEME + (qs ? qs : '') + (hash ? '#' + hash : '');
     }
@@ -436,6 +538,8 @@
     const appleIcon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
       <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
     </svg>`;
+
+    // ─── Page renderers ──────────────────────────────────────────
 
     function renderLanding() {
       document.getElementById('page-content').innerHTML = `
@@ -540,7 +644,6 @@
         <div class="auth-footer">© ${new Date().getFullYear()} WWJD &middot; Made with faith.</div>
       `;
 
-      /* Auto-open countdown */
       let secs = 5;
       const countEl = document.getElementById('countdown');
       const noteEl  = document.getElementById('redirect-note');
@@ -555,14 +658,26 @@
         }
       }, 1000);
 
-      /* Cancel auto-redirect if user clicks manually */
       document.getElementById('open-app-link').addEventListener('click', () => {
         clearInterval(timer);
         noteEl.textContent = '';
       });
     }
 
-    function renderPasswordReset() {
+    function showLoading() {
+      document.getElementById('page-content').innerHTML = `
+        <div class="auth-page">
+          <div class="auth-card">
+            <div class="auth-loading">
+              <div class="auth-spinner"></div>
+              <p>Verifying your link&hellip;</p>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderPasswordResetForm(sb) {
       const link = deepLink();
       document.getElementById('page-content').innerHTML = `
         <div class="auth-page">
@@ -571,68 +686,134 @@
             <svg class="check-ring" viewBox="0 0 80 80" aria-hidden="true">
               <circle class="check-bg" cx="40" cy="40" r="36"/>
               <circle class="check-arc" cx="40" cy="40" r="36"/>
-              <!-- Key shape -->
-              <circle cx="34" cy="38" r="9" fill="none" stroke="var(--gold)" stroke-width="3"
-                stroke-dasharray="57" stroke-dashoffset="57"
-                style="animation:check-draw 0.5s cubic-bezier(0.4,0,0.2,1) 0.65s forwards"/>
-              <line x1="43" y1="43" x2="54" y2="54" stroke="var(--gold)" stroke-width="3" stroke-linecap="round"
-                stroke-dasharray="16" stroke-dashoffset="16"
-                style="animation:check-draw 0.25s cubic-bezier(0.4,0,0.2,1) 1.1s forwards"/>
-              <line x1="50" y1="50" x2="50" y2="55" stroke="var(--gold)" stroke-width="3" stroke-linecap="round"
-                stroke-dasharray="5" stroke-dashoffset="5"
-                style="animation:check-draw 0.15s cubic-bezier(0.4,0,0.2,1) 1.3s forwards"/>
-              <line x1="54" y1="47" x2="54" y2="52" stroke="var(--gold)" stroke-width="3" stroke-linecap="round"
-                stroke-dasharray="5" stroke-dashoffset="5"
-                style="animation:check-draw 0.15s cubic-bezier(0.4,0,0.2,1) 1.4s forwards"/>
+              <polyline points="24,41 35,52 56,30"/>
             </svg>
 
             <h1>Reset Your Password</h1>
-            <p class="auth-sub">
-              Tap the button below to open the WWJD app and set a new password for your account.
-            </p>
+            <p class="auth-sub">Enter a new password for your WWJD account.</p>
 
-            <a href="${link}" class="open-app-btn" id="open-app-link">
-              ${appleIcon} Open WWJD to Reset Password
-            </a>
+            <div id="auth-error" class="auth-error-msg" style="display:none"></div>
 
-            <p class="auth-redirect-note" id="redirect-note">
-              Opening automatically in <strong id="countdown">5</strong>s&hellip;
-            </p>
+            <form class="auth-form" id="reset-form" onsubmit="return false">
+              <div class="auth-field">
+                <label for="pw-new">New Password</label>
+                <input type="password" id="pw-new" placeholder="At least 8 characters" autocomplete="new-password" />
+              </div>
+              <div class="auth-field">
+                <label for="pw-confirm">Confirm Password</label>
+                <input type="password" id="pw-confirm" placeholder="Repeat your new password" autocomplete="new-password" />
+              </div>
+              <button class="auth-submit" id="reset-submit" type="submit">Update Password</button>
+            </form>
 
-            <div class="auth-verse">
+            <div class="or-divider">or</div>
+            <a href="${link}" class="open-app-link">${appleIcon}&nbsp;Open in WWJD App (iPhone)</a>
+
+            <div class="auth-verse" style="margin-top:24px">
               <blockquote>"Create in me a pure heart, O God, and renew a steadfast spirit within me."</blockquote>
               <cite>Psalm 51:10</cite>
             </div>
-
-            <p class="auth-download-hint">
-              Link not working?
-              <a href="${APPSTORE_URL}">Download the app first.</a>
-            </p>
 
           </div>
         </div>
         <div class="auth-footer">© ${new Date().getFullYear()} WWJD &middot; Made with faith.</div>
       `;
 
-      /* Auto-open countdown */
-      let secs = 5;
-      const countEl = document.getElementById('countdown');
-      const noteEl  = document.getElementById('redirect-note');
-      const timer = setInterval(() => {
-        secs--;
-        if (secs <= 0) {
-          clearInterval(timer);
-          noteEl.textContent = 'Redirecting\u2026';
-          window.location.href = link;
-        } else {
-          countEl.textContent = secs;
-        }
-      }, 1000);
+      const errorEl   = document.getElementById('auth-error');
+      const submitBtn = document.getElementById('reset-submit');
 
-      document.getElementById('open-app-link').addEventListener('click', () => {
-        clearInterval(timer);
-        noteEl.textContent = '';
+      document.getElementById('reset-form').addEventListener('submit', async () => {
+        const pw  = document.getElementById('pw-new').value;
+        const cpw = document.getElementById('pw-confirm').value;
+
+        errorEl.style.display = 'none';
+
+        if (pw.length < 8) {
+          errorEl.textContent = 'Password must be at least 8 characters.';
+          errorEl.style.display = 'block';
+          return;
+        }
+        if (pw !== cpw) {
+          errorEl.textContent = 'Passwords do not match.';
+          errorEl.style.display = 'block';
+          return;
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Updating\u2026';
+
+        const { error: updErr } = await sb.auth.updateUser({ password: pw });
+
+        if (updErr) {
+          errorEl.textContent = updErr.message || 'Something went wrong. Please try again.';
+          errorEl.style.display = 'block';
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Update Password';
+          return;
+        }
+
+        // Success
+        document.getElementById('page-content').innerHTML = `
+          <div class="auth-page">
+            <div class="auth-card">
+              <svg class="check-ring" viewBox="0 0 80 80" aria-hidden="true">
+                <circle class="check-bg" cx="40" cy="40" r="36"/>
+                <circle class="check-arc" cx="40" cy="40" r="36"/>
+                <polyline points="24,41 35,52 56,30"/>
+              </svg>
+              <h1>Password Updated!</h1>
+              <p class="auth-sub">Your password has been changed. Open the WWJD app to sign in with your new password.</p>
+              <a href="${link}" class="open-app-btn">${appleIcon} Open the WWJD App</a>
+              <div class="auth-verse" style="margin-top:20px">
+                <blockquote>"His mercies are new every morning."</blockquote>
+                <cite>Lamentations 3:23</cite>
+              </div>
+            </div>
+          </div>
+          <div class="auth-footer">© ${new Date().getFullYear()} WWJD &middot; Made with faith.</div>
+        `;
       });
+    }
+
+    async function initAndRoute() {
+      showLoading();
+
+      const { createClient } = window.supabase;
+      const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+        auth: { flowType: 'pkce' }
+      });
+
+      // Guard against the auth-state listener firing multiple times
+      let routed = false;
+      const routeTo = (fn) => { if (!routed) { routed = true; fn(); } };
+
+      // Listen BEFORE exchanging so we catch the event
+      sb.auth.onAuthStateChange((event) => {
+        if (event === 'PASSWORD_RECOVERY') routeTo(() => renderPasswordResetForm(sb));
+        else if (event === 'SIGNED_IN')     routeTo(renderEmailConfirmed);
+      });
+
+      if (code) {
+        const { error: exchErr } = await sb.auth.exchangeCodeForSession(code);
+        if (exchErr) {
+          routeTo(() => renderLinkExpired(exchErr.code || 'invalid'));
+        } else if (!routed) {
+          // Exchange succeeded but no auth event fired — shouldn't happen,
+          // but fall back gracefully
+          routeTo(renderEmailConfirmed);
+        }
+      } else if (hashParams.get('access_token')) {
+        // Older implicit-flow tokens (non-PKCE)
+        const { error: sessErr } = await sb.auth.setSession({
+          access_token: hashParams.get('access_token'),
+          refresh_token: hashParams.get('refresh_token') || ''
+        });
+        if (sessErr) {
+          routeTo(() => renderLinkExpired('invalid'));
+        } else {
+          routeTo(() => renderPasswordResetForm(sb));
+        }
+      }
     }
 
     function renderLinkExpired(errorCode) {
@@ -675,13 +856,15 @@
       `;
     }
 
-    // Route based on Supabase auth callback
+    // ─── Router ──────────────────────────────────────────────────
     if (error) {
       renderLinkExpired(errorCode);
-    } else if (code || type === 'signup' || type === 'email_change') {
+    } else if (code || (type === 'recovery' && hashParams.get('access_token'))) {
+      // Use the SDK to exchange the code and detect whether it's a
+      // password recovery or an email confirmation — can't tell from URL alone.
+      initAndRoute();
+    } else if (type === 'signup' || type === 'email_change' || type === 'email') {
       renderEmailConfirmed();
-    } else if (type === 'recovery') {
-      renderPasswordReset();
     } else {
       renderLanding();
     }
