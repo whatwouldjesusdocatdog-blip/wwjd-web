@@ -422,7 +422,7 @@
     const hash         = window.location.hash.substring(1);
     const hashParams   = new URLSearchParams(hash);
     const queryParams  = new URLSearchParams(window.location.search);
-    const type         = hashParams.get('type');
+    const type         = queryParams.get('type') || hashParams.get('type');
     const code         = queryParams.get('code');
     const error        = queryParams.get('error') || hashParams.get('error');
     const errorCode    = queryParams.get('error_code') || hashParams.get('error_code');
@@ -563,19 +563,76 @@
     }
 
     function renderPasswordReset() {
+      const link = deepLink();
       document.getElementById('page-content').innerHTML = `
-        <section class="auth-hero">
-          <div class="auth-icon">🔑</div>
-          <h1>Reset Your Password</h1>
-          <p>Tap the button below to open the WWJD app and set a new password for your account.</p>
-          <a href="${deepLink()}" class="open-app-btn">Open WWJD to Reset Password</a>
-          <p style="margin-top:24px; font-size:13px; color:var(--muted)">
-            Link not working?
-            <a href="${APPSTORE_URL}" style="color:var(--gold); font-weight:600">Download the app first.</a>
-          </p>
-        </section>
-        <div class="auth-footer">© ${new Date().getFullYear()} WWJD</div>
+        <div class="auth-page">
+          <div class="auth-card">
+
+            <svg class="check-ring" viewBox="0 0 80 80" aria-hidden="true">
+              <circle class="check-bg" cx="40" cy="40" r="36"/>
+              <circle class="check-arc" cx="40" cy="40" r="36"/>
+              <!-- Key shape -->
+              <circle cx="34" cy="38" r="9" fill="none" stroke="var(--gold)" stroke-width="3"
+                stroke-dasharray="57" stroke-dashoffset="57"
+                style="animation:check-draw 0.5s cubic-bezier(0.4,0,0.2,1) 0.65s forwards"/>
+              <line x1="43" y1="43" x2="54" y2="54" stroke="var(--gold)" stroke-width="3" stroke-linecap="round"
+                stroke-dasharray="16" stroke-dashoffset="16"
+                style="animation:check-draw 0.25s cubic-bezier(0.4,0,0.2,1) 1.1s forwards"/>
+              <line x1="50" y1="50" x2="50" y2="55" stroke="var(--gold)" stroke-width="3" stroke-linecap="round"
+                stroke-dasharray="5" stroke-dashoffset="5"
+                style="animation:check-draw 0.15s cubic-bezier(0.4,0,0.2,1) 1.3s forwards"/>
+              <line x1="54" y1="47" x2="54" y2="52" stroke="var(--gold)" stroke-width="3" stroke-linecap="round"
+                stroke-dasharray="5" stroke-dashoffset="5"
+                style="animation:check-draw 0.15s cubic-bezier(0.4,0,0.2,1) 1.4s forwards"/>
+            </svg>
+
+            <h1>Reset Your Password</h1>
+            <p class="auth-sub">
+              Tap the button below to open the WWJD app and set a new password for your account.
+            </p>
+
+            <a href="${link}" class="open-app-btn" id="open-app-link">
+              ${appleIcon} Open WWJD to Reset Password
+            </a>
+
+            <p class="auth-redirect-note" id="redirect-note">
+              Opening automatically in <strong id="countdown">5</strong>s&hellip;
+            </p>
+
+            <div class="auth-verse">
+              <blockquote>"Create in me a pure heart, O God, and renew a steadfast spirit within me."</blockquote>
+              <cite>Psalm 51:10</cite>
+            </div>
+
+            <p class="auth-download-hint">
+              Link not working?
+              <a href="${APPSTORE_URL}">Download the app first.</a>
+            </p>
+
+          </div>
+        </div>
+        <div class="auth-footer">© ${new Date().getFullYear()} WWJD &middot; Made with faith.</div>
       `;
+
+      /* Auto-open countdown */
+      let secs = 5;
+      const countEl = document.getElementById('countdown');
+      const noteEl  = document.getElementById('redirect-note');
+      const timer = setInterval(() => {
+        secs--;
+        if (secs <= 0) {
+          clearInterval(timer);
+          noteEl.textContent = 'Redirecting\u2026';
+          window.location.href = link;
+        } else {
+          countEl.textContent = secs;
+        }
+      }, 1000);
+
+      document.getElementById('open-app-link').addEventListener('click', () => {
+        clearInterval(timer);
+        noteEl.textContent = '';
+      });
     }
 
     function renderLinkExpired(errorCode) {
