@@ -3,883 +3,641 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>WWJD — What Would Jesus Do?</title>
-  <meta name="description" content="Daily Bible verses, AI-powered devotionals, and spiritual guidance. WWJD brings Scripture to life on your iPhone." />
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <title>Cana — Bible Chat, Study & Devotional</title>
+  <meta name="description" content="AI-powered Bible chat, daily devotionals, and Scripture study across 8 translations. Cana brings the Word to life on your iPhone." />
+  <meta name="theme-color" content="#FAF5E5" />
+
+  <!-- Open Graph / social -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Cana — Bible Chat, Study & Devotional" />
+  <meta property="og:description" content="AI-powered Bible chat, daily devotionals, and Scripture study across 8 translations." />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Cana — Bible Chat, Study & Devotional" />
+  <meta name="twitter:description" content="AI-powered Bible chat, daily devotionals, and Scripture study across 8 translations." />
   <style>
     /* ── Tokens ── */
     :root {
-      --gold:       #D9B359;
-      --gold-light: #F0D48A;
-      --gold-faint: #FBF4E0;
-      --brown:      #402608;
-      --cream:      #FAF5E5;
-      --parchment:  #F2E8CC;
-      --text:       #2D1A06;
-      --muted:      #7A6040;
-      --muted-lt:   #B09878;
-      --radius:     14px;
-      --radius-lg:  20px;
-      --shadow-lg:  0 24px 64px rgba(64,38,8,0.18);
+      --gold:        #D9B359;
+      --gold-light:  #F0D48A;
+      --gold-faint:  #FBF4E0;
+      --gold-deep:   #9A7822;
+      --brown:       #402608;
+      --brown-mid:   #5c3810;
+      --cream:       #FAF5E5;
+      --parchment:   #F2E8CC;
+      --parchment-2: #E8DDB8;
+      --text:        #2D1A06;
+      --muted:       #7A6040;
+      --muted-lt:    #B09878;
+      --radius:      14px;
+      --radius-lg:   22px;
+      --shadow-sm:   0 2px 8px rgba(64,38,8,0.07);
+      --shadow-md:   0 6px 24px rgba(64,38,8,0.10);
+      --t:           160ms cubic-bezier(0.4,0,0.2,1);
     }
 
-    /* ── Reset ── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
+    html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { animation-duration: 0ms !important; transition-duration: 0ms !important; }
+    }
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       background: var(--cream);
       color: var(--text);
       line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
     }
+    img { display: block; max-width: 100%; }
+    a { color: inherit; }
+    :focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; border-radius: 4px; }
 
     /* ── Nav ── */
+    .nav-wrap {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(250,245,229,0.88);
+      backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid transparent;
+      transition: border-color var(--t), box-shadow var(--t);
+    }
+    .nav-wrap.scrolled { border-color: var(--parchment); box-shadow: var(--shadow-sm); }
     nav {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 18px 5%;
-      max-width: 1100px;
-      margin: 0 auto;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 16px 5%; max-width: 1100px; margin: 0 auto;
     }
     .nav-logo {
-      font-family: Georgia, serif;
-      font-size: 22px;
-      font-weight: bold;
-      color: var(--brown);
-      letter-spacing: 0.03em;
+      font-family: Georgia, serif; font-size: 22px; font-weight: bold;
+      color: var(--brown); letter-spacing: 0.02em; text-decoration: none;
     }
     .nav-logo span { color: var(--gold); }
-    .app-store-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: var(--brown);
-      color: var(--cream);
-      text-decoration: none;
-      padding: 10px 20px;
-      border-radius: 999px;
-      font-size: 14px;
-      font-weight: 600;
-      transition: background 0.2s;
+    .nav-right { display: flex; align-items: center; gap: 20px; }
+    .nav-link {
+      font-size: 14px; font-weight: 500; color: var(--muted);
+      text-decoration: none; transition: color var(--t); cursor: pointer;
     }
-    .app-store-btn:hover { background: #5c3810; }
+    .nav-link:hover { color: var(--brown); }
+
+    /* ── Buttons ── */
+    .btn-dark {
+      display: inline-flex; align-items: center; gap: 7px;
+      background: var(--brown); color: var(--cream);
+      text-decoration: none; padding: 10px 20px; border-radius: 999px;
+      font-size: 14px; font-weight: 600; cursor: pointer; white-space: nowrap;
+      transition: background var(--t), transform var(--t);
+    }
+    .btn-dark:hover { background: var(--brown-mid); transform: translateY(-1px); }
+    .btn-gold {
+      display: inline-flex; align-items: center; gap: 9px;
+      background: var(--gold); color: var(--brown);
+      text-decoration: none; padding: 16px 36px; border-radius: 999px;
+      font-size: 17px; font-weight: 700; cursor: pointer;
+      box-shadow: 0 4px 20px rgba(217,179,89,0.40);
+      transition: background var(--t), transform var(--t), box-shadow var(--t);
+    }
+    .btn-gold:hover { background: var(--gold-light); transform: translateY(-2px); box-shadow: 0 8px 32px rgba(217,179,89,0.52); }
+
+    /* ── iPhone frame ── */
+    .iphone {
+      position: relative;
+      background: #18120A;
+      border-radius: 52px;
+      padding: 10px 8px;
+      box-shadow:
+        0 0 0 1.5px rgba(255,255,255,0.07),
+        0 0 0 2px rgba(0,0,0,0.5),
+        0 32px 72px rgba(0,0,0,0.38),
+        0 8px 24px rgba(0,0,0,0.22);
+    }
+    .iphone img {
+      display: block; width: 100%;
+      border-radius: 42px;
+      object-fit: cover;
+    }
+    /* Side buttons */
+    .iphone::before {
+      content: '';
+      position: absolute;
+      right: -3px; top: 100px;
+      width: 3px; height: 56px;
+      background: #2a1e10;
+      border-radius: 0 3px 3px 0;
+      box-shadow: 0 72px 0 #2a1e10;
+    }
+    .iphone::after {
+      content: '';
+      position: absolute;
+      left: -3px; top: 130px;
+      width: 3px; height: 36px;
+      background: #2a1e10;
+      border-radius: 3px 0 0 3px;
+      box-shadow: 0 52px 0 #2a1e10, 0 96px 0 #2a1e10;
+    }
 
     /* ── Hero ── */
-    .hero {
-      text-align: center;
-      padding: 80px 5% 60px;
-      max-width: 780px;
-      margin: 0 auto;
+    .hero-wrap {
+      background:
+        radial-gradient(ellipse 1000px 600px at 80% 20%, rgba(217,179,89,0.14), transparent 60%),
+        radial-gradient(ellipse 800px 500px at 10% 70%, rgba(217,179,89,0.06), transparent 60%);
     }
-    .hero-tag {
-      display: inline-block;
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: var(--gold);
-      border: 1px solid var(--gold);
-      padding: 4px 12px;
-      border-radius: 999px;
-      margin-bottom: 24px;
+    .hero {
+      max-width: 1100px; margin: 0 auto;
+      padding: 72px 5% 64px;
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 48px; align-items: center;
+    }
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 11px; font-weight: 700; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--gold-deep);
+      background: var(--gold-faint);
+      border: 1px solid rgba(217,179,89,0.35);
+      padding: 5px 14px; border-radius: 999px; margin-bottom: 28px;
     }
     .hero h1 {
       font-family: Georgia, serif;
-      font-size: clamp(36px, 6vw, 64px);
-      line-height: 1.15;
-      color: var(--brown);
-      margin-bottom: 20px;
+      font-size: clamp(38px, 5vw, 60px);
+      line-height: 1.1; color: var(--brown);
+      margin-bottom: 22px; letter-spacing: -0.01em;
     }
-    .hero h1 em {
-      font-style: italic;
-      color: var(--gold);
+    .hero h1 em { font-style: italic; color: var(--gold-deep); }
+    .hero-sub {
+      font-size: clamp(16px, 1.8vw, 18px); color: var(--muted);
+      line-height: 1.7; margin-bottom: 36px; max-width: 440px;
     }
-    .hero p {
-      font-size: clamp(16px, 2vw, 19px);
-      color: var(--muted);
-      max-width: 560px;
-      margin: 0 auto 36px;
-    }
-    .hero-cta {
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      background: var(--gold);
-      color: var(--brown);
-      text-decoration: none;
-      padding: 15px 32px;
-      border-radius: 999px;
-      font-size: 16px;
-      font-weight: 700;
-      transition: background 0.2s, transform 0.15s;
-      box-shadow: 0 4px 18px rgba(217,179,89,0.35);
-    }
-    .hero-cta:hover { background: var(--gold-light); transform: translateY(-2px); }
+    .hero-ctas { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 20px; }
+    .hero-note { font-size: 12px; color: var(--muted-lt); }
 
-    /* ── Verse card ── */
-    .verse-card {
+    /* Hero phones */
+    .hero-visual {
+      display: flex; align-items: flex-end;
+      justify-content: center; gap: 16px;
+    }
+    .hero-phone-primary { width: 210px; flex-shrink: 0; }
+    .hero-phone-secondary {
+      width: 175px; flex-shrink: 0;
+      transform: translateY(48px);
+      opacity: 0.75;
+    }
+    /* Clip hero phones to show just the important top portion */
+    .hero-phone-primary .iphone img { max-height: 440px; object-position: top; }
+    .hero-phone-secondary .iphone img { max-height: 380px; object-position: top; }
+
+    /* ── Trust bar ── */
+    .trust-bar {
       background: var(--parchment);
-      border-radius: var(--radius);
-      padding: 28px 32px;
-      max-width: 620px;
-      margin: 56px auto 0;
-      text-align: left;
-      box-shadow: 0 6px 24px rgba(64,38,8,0.08);
+      border-top: 1px solid var(--parchment-2);
+      border-bottom: 1px solid var(--parchment-2);
+      padding: 22px 5%;
     }
-    .verse-label {
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--gold);
-      margin-bottom: 14px;
+    .trust-inner {
+      max-width: 1100px; margin: 0 auto;
+      display: flex; flex-wrap: wrap; gap: 32px;
+      align-items: center; justify-content: center;
     }
-    .verse-text {
+    .trust-item {
+      display: flex; align-items: center; gap: 9px;
+      font-size: 14px; font-weight: 600; color: var(--brown);
+      white-space: nowrap;
+    }
+    .trust-item svg { color: var(--gold-deep); flex-shrink: 0; width: 16px; height: 16px; }
+
+    /* ── Section shared ── */
+    .section-eyebrow {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.16em;
+      text-transform: uppercase; color: var(--gold-deep); margin-bottom: 12px;
+    }
+    .section-heading {
       font-family: Georgia, serif;
-      font-size: 20px;
-      font-style: italic;
-      line-height: 1.7;
-      color: var(--brown);
-      margin-bottom: 12px;
+      font-size: clamp(28px, 4vw, 44px);
+      color: var(--brown); line-height: 1.2; letter-spacing: -0.01em;
     }
-    .verse-ref {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--gold);
-    }
+    .section-sub { font-size: 16px; color: var(--muted); line-height: 1.7; max-width: 520px; }
 
     /* ── Features ── */
-    .features {
-      padding: 80px 5%;
-      max-width: 1100px;
-      margin: 0 auto;
-    }
-    .section-label {
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: var(--gold);
-      margin-bottom: 12px;
-    }
-    .features h2 {
-      font-family: Georgia, serif;
-      font-size: clamp(28px, 4vw, 42px);
-      color: var(--brown);
-      margin-bottom: 48px;
-      max-width: 480px;
-    }
+    .features-section { padding: 96px 5%; max-width: 1100px; margin: 0 auto; }
+    .features-header { margin-bottom: 56px; }
     .features-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 20px;
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
     }
     .feature-card {
-      background: white;
-      border-radius: var(--radius);
-      padding: 28px 24px;
-      box-shadow: 0 2px 12px rgba(64,38,8,0.06);
-      transition: transform 0.2s, box-shadow 0.2s;
+      background: white; border-radius: var(--radius-lg); padding: 32px 28px;
+      box-shadow: var(--shadow-sm); border: 1px solid rgba(242,232,204,0.8);
+      transition: transform var(--t), box-shadow var(--t);
     }
-    .feature-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(64,38,8,0.10); }
+    .feature-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-md); }
     .feature-icon {
-      width: 48px;
-      height: 48px;
-      border-radius: 12px;
-      background: var(--parchment);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 24px;
-      margin-bottom: 16px;
+      width: 52px; height: 52px; border-radius: 14px;
+      background: var(--gold-faint); display: flex; align-items: center;
+      justify-content: center; margin-bottom: 20px; color: var(--gold-deep);
     }
     .feature-card h3 {
-      font-family: Georgia, serif;
-      font-size: 18px;
-      color: var(--brown);
-      margin-bottom: 8px;
+      font-family: Georgia, serif; font-size: 19px; color: var(--brown);
+      margin-bottom: 10px; line-height: 1.3;
     }
-    .feature-card p {
-      font-size: 14px;
-      color: var(--muted);
-      line-height: 1.6;
-    }
+    .feature-card p { font-size: 14px; color: var(--muted); line-height: 1.65; }
 
-    /* ── Quote strip ── */
-    .quote-strip {
-      background: var(--brown);
-      color: var(--parchment);
+    /* ── Screenshots ── */
+    .screenshots-section {
+      background:
+        radial-gradient(ellipse 900px 500px at 50% 0%, rgba(217,179,89,0.08), transparent 70%),
+        #18120A;
+      padding: 96px 5% 104px;
+      overflow: hidden;
+    }
+    .screenshots-inner { max-width: 1100px; margin: 0 auto; }
+    .screenshots-header { text-align: center; margin-bottom: 64px; }
+    .screenshots-header .section-eyebrow { color: var(--gold); }
+    .screenshots-header .section-heading { color: #F2E8CC; }
+    .screenshots-header .section-sub { color: rgba(242,232,204,0.55); margin: 14px auto 0; }
+
+    .screenshots-grid {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .screenshot-item {
+      flex: 0 0 160px;
+      width: 160px;
       text-align: center;
-      padding: 64px 5%;
     }
-    .quote-strip blockquote {
-      font-family: Georgia, serif;
-      font-size: clamp(20px, 3vw, 30px);
-      font-style: italic;
-      max-width: 700px;
-      margin: 0 auto 16px;
-      line-height: 1.6;
+    .screenshot-item .iphone {
+      width: 160px;
+      margin: 0 0 24px;
+      box-shadow:
+        0 0 0 1.5px rgba(255,255,255,0.07),
+        0 0 0 2px rgba(0,0,0,0.5),
+        0 24px 60px rgba(0,0,0,0.55),
+        0 6px 18px rgba(0,0,0,0.3);
     }
-    .quote-strip cite {
-      font-size: 14px;
-      color: var(--gold);
-      font-style: normal;
-      font-weight: 600;
-      letter-spacing: 0.08em;
+    .screenshot-item .iphone img {
+      width: 100%;
+      height: 324px;
+      object-fit: cover;
+      object-position: top center;
     }
 
-    /* ── CTA section ── */
+    .screenshot-label {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--gold); margin-bottom: 6px;
+    }
+    .screenshot-title {
+      font-family: Georgia, serif; font-size: 16px; color: #F2E8CC;
+      margin-bottom: 6px; line-height: 1.3;
+    }
+    .screenshot-desc { font-size: 13px; color: rgba(242,232,204,0.5); line-height: 1.55; }
+
+    /* ── Quote ── */
+    .quote-section {
+      padding: 88px 5%; text-align: center;
+      background: var(--gold-faint);
+      border-top: 1px solid var(--parchment-2);
+      border-bottom: 1px solid var(--parchment-2);
+    }
+    .quote-mark {
+      font-family: Georgia, serif; font-size: 80px; line-height: 0.55;
+      color: var(--gold); opacity: 0.35; display: block; margin-bottom: 8px;
+    }
+    .quote-section blockquote {
+      font-family: Georgia, serif;
+      font-size: clamp(22px, 3vw, 34px); font-style: italic;
+      color: var(--brown); max-width: 680px; margin: 0 auto 20px; line-height: 1.55;
+    }
+    .quote-section cite {
+      font-size: 14px; font-weight: 700; color: var(--gold-deep);
+      font-style: normal; letter-spacing: 0.1em; text-transform: uppercase;
+    }
+
+    /* ── CTA ── */
     .cta-section {
-      text-align: center;
-      padding: 80px 5%;
-      max-width: 600px;
-      margin: 0 auto;
+      padding: 96px 5%; text-align: center;
+      max-width: 660px; margin: 0 auto;
     }
-    .cta-section h2 {
-      font-family: Georgia, serif;
-      font-size: clamp(26px, 4vw, 38px);
-      color: var(--brown);
-      margin-bottom: 16px;
-    }
-    .cta-section p {
-      font-size: 16px;
-      color: var(--muted);
-      margin-bottom: 32px;
-    }
+    .cta-section .section-heading { margin-bottom: 16px; }
+    .cta-section .section-sub { margin: 0 auto 40px; }
 
     /* ── Footer ── */
     footer {
-      border-top: 1px solid var(--parchment);
-      padding: 28px 5%;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      max-width: 1100px;
-      margin: 0 auto;
-      font-size: 13px;
-      color: var(--muted);
+      border-top: 1px solid var(--parchment-2); padding: 32px 5%;
+      max-width: 1100px; margin: 0 auto;
+      display: flex; flex-wrap: wrap; justify-content: space-between;
+      align-items: center; gap: 16px; font-size: 13px; color: var(--muted-lt);
     }
-    footer a { color: var(--muted); text-decoration: none; }
+    footer a { color: var(--muted-lt); text-decoration: none; transition: color var(--t); }
     footer a:hover { color: var(--brown); }
+    .footer-links { display: flex; gap: 24px; flex-wrap: wrap; }
 
-    /* ── Auth callback pages ── */
-    .auth-page {
-      min-height: calc(100vh - 60px);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 60px 5% 80px;
-      background: linear-gradient(160deg, var(--cream) 0%, var(--gold-faint) 100%);
+    /* ── Fade-up animation ── */
+    @media (prefers-reduced-motion: no-preference) {
+      .fade-up {
+        opacity: 0; transform: translateY(28px);
+        transition: opacity 0.55s ease, transform 0.55s ease;
+      }
+      .fade-up.visible { opacity: 1; transform: translateY(0); }
     }
-    .auth-card {
-      background: #fff;
-      border: 1px solid rgba(217,179,89,0.22);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-lg);
-      padding: 52px 48px 44px;
-      max-width: 520px;
-      width: 100%;
-      text-align: center;
-    }
-    /* Animated checkmark */
-    .check-ring {
-      width: 80px;
-      height: 80px;
-      margin: 0 auto 28px;
-    }
-    .check-ring .check-bg {
-      fill: var(--gold-faint);
-      stroke: none;
-    }
-    .check-ring .check-arc {
-      fill: none;
-      stroke: var(--gold);
-      stroke-width: 3;
-      stroke-dasharray: 226;
-      stroke-dashoffset: 226;
-      animation: ring-draw 0.65s cubic-bezier(0.4,0,0.2,1) 0.1s forwards;
-      transform-origin: 40px 40px;
-      transform: rotate(-90deg);
-    }
-    .check-ring polyline {
-      fill: none;
-      stroke: var(--gold);
-      stroke-width: 3.5;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-      stroke-dasharray: 48;
-      stroke-dashoffset: 48;
-      animation: check-draw 0.4s cubic-bezier(0.4,0,0.2,1) 0.65s forwards;
-    }
-    @keyframes ring-draw  { to { stroke-dashoffset: 0; } }
-    @keyframes check-draw { to { stroke-dashoffset: 0; } }
-    .auth-card h1 {
-      font-family: Georgia, serif;
-      font-size: clamp(26px, 4vw, 34px);
-      color: var(--brown);
-      margin-bottom: 12px;
-      letter-spacing: -0.01em;
-    }
-    .auth-card .auth-sub {
-      font-size: 16px;
-      color: var(--muted);
-      line-height: 1.7;
-      margin-bottom: 32px;
-    }
-    .open-app-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 9px;
-      background: var(--gold);
-      color: var(--brown);
-      text-decoration: none;
-      padding: 15px 34px;
-      border-radius: 999px;
-      font-size: 15px;
-      font-weight: 700;
-      box-shadow: 0 4px 22px rgba(217,179,89,0.42);
-      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
-      margin-bottom: 16px;
-    }
-    .open-app-btn:hover { background: var(--gold-light); transform: translateY(-2px); box-shadow: 0 8px 28px rgba(217,179,89,0.48); }
-    .auth-redirect-note {
-      font-size: 12px;
-      color: var(--muted-lt);
-      margin-bottom: 28px;
-      min-height: 18px;
-    }
-    .auth-redirect-note strong { color: var(--muted); }
-    .auth-verse {
-      border-top: 1px solid var(--parchment);
-      padding-top: 24px;
-    }
-    .auth-verse blockquote {
-      font-family: Georgia, serif;
-      font-style: italic;
-      font-size: 14px;
-      color: var(--muted);
-      line-height: 1.75;
-      margin-bottom: 6px;
-    }
-    .auth-verse cite {
-      font-size: 12px;
-      font-style: normal;
-      font-weight: 600;
-      color: var(--gold);
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
-    }
-    .auth-download-hint {
-      margin-top: 20px;
-      font-size: 13px;
-      color: var(--muted-lt);
-    }
-    .auth-download-hint a {
-      color: var(--gold);
-      font-weight: 600;
-      text-decoration: none;
-    }
-    .auth-download-hint a:hover { text-decoration: underline; }
-    .auth-footer {
-      border-top: 1px solid var(--parchment);
-      padding: 20px;
-      text-align: center;
-      color: var(--muted-lt);
-      font-size: 12px;
-    }
-
-    /* ── Loading state ── */
-    .auth-loading {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 32px 0 16px;
-    }
-    .auth-spinner {
-      width: 44px;
-      height: 44px;
-      border: 3px solid var(--parchment);
-      border-top-color: var(--gold);
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-      margin-bottom: 16px;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .auth-loading p { font-size: 14px; color: var(--muted); }
-
-    /* ── Password reset form ── */
-    .auth-form { margin-top: 4px; text-align: left; }
-    .auth-field { margin-bottom: 16px; }
-    .auth-field label {
-      display: block;
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 7px;
-    }
-    .auth-field input {
-      width: 100%;
-      padding: 13px 16px;
-      border: 1.5px solid #e8dfc8;
-      border-radius: var(--radius);
-      font-size: 15px;
-      background: var(--cream);
-      color: var(--text);
-      outline: none;
-      transition: border-color 0.18s, box-shadow 0.18s;
-    }
-    .auth-field input:focus {
-      border-color: var(--gold);
-      box-shadow: 0 0 0 3px rgba(217,179,89,0.15);
-    }
-    .auth-error-msg {
-      background: #fff5f2;
-      border: 1px solid #f4b8a5;
-      border-radius: 10px;
-      padding: 10px 14px;
-      color: #8b3520;
-      font-size: 13px;
-      margin-bottom: 14px;
-      text-align: left;
-    }
-    .auth-submit {
-      width: 100%;
-      background: var(--gold);
-      color: var(--brown);
-      border: none;
-      padding: 15px;
-      border-radius: 999px;
-      font-size: 15px;
-      font-weight: 700;
-      cursor: pointer;
-      box-shadow: 0 4px 22px rgba(217,179,89,0.42);
-      transition: background 0.2s, transform 0.15s;
-      margin-top: 4px;
-    }
-    .auth-submit:hover:not(:disabled) { background: var(--gold-light); transform: translateY(-2px); }
-    .auth-submit:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
-    .or-divider {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin: 22px 0 0;
-      color: var(--muted-lt);
-      font-size: 12px;
-    }
-    .or-divider::before, .or-divider::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: var(--parchment);
-    }
-    .open-app-link {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      margin-top: 14px;
-      font-size: 13px;
-      color: var(--gold);
-      font-weight: 600;
-      text-decoration: none;
-    }
-    .open-app-link:hover { text-decoration: underline; }
 
     /* ── Responsive ── */
-    @media (max-width: 560px) {
-      .auth-card { padding: 40px 24px 36px; }
+    @media (max-width: 780px) {
+      .screenshot-item { flex: 0 0 140px; width: 140px; }
+      .screenshot-item .iphone { width: 140px; }
+      .screenshot-item .iphone img { height: 284px; }
+    }
+    @media (max-width: 900px) {
+      .features-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 768px) {
+      .hero {
+        grid-template-columns: 1fr; text-align: center;
+        padding: 56px 5% 40px;
+      }
+      .hero-sub, .hero-note { margin-left: auto; margin-right: auto; }
+      .hero-ctas { justify-content: center; }
+      .hero-visual { order: -1; margin-bottom: 8px; }
+      .hero-phone-secondary { display: none; }
+      .hero-phone-primary { width: 220px; }
+      .hero-phone-primary .iphone img { max-height: 460px; }
     }
     @media (max-width: 600px) {
-      nav { flex-direction: column; gap: 14px; }
-      .hero { padding: 48px 5% 40px; }
-      .verse-card { margin-top: 36px; padding: 20px; }
+      .features-grid { grid-template-columns: 1fr; }
+      .screenshots-grid { gap: 12px; }
+      .screenshot-item { flex: 0 0 130px; width: 130px; }
+      .screenshot-item .iphone { width: 130px; }
+      .screenshot-item .iphone img { height: 264px; }
+      .nav-link { display: none; }
+      .trust-inner { gap: 16px; }
+      .trust-item { font-size: 13px; }
     }
   </style>
 </head>
 <body>
 
+<!-- ── Nav ── -->
+<div class="nav-wrap" id="nav-wrap">
   <nav>
-    <div class="nav-logo">WWJD<span>.</span></div>
-    <a href="#" class="app-store-btn" id="nav-appstore-link">
-      &#xf8ff; Download on the App Store
-    </a>
+    <a href="#" class="nav-logo">Cana</a>
+    <div class="nav-right">
+      <a href="#features" class="nav-link">Features</a>
+      <a href="#screenshots" class="nav-link">Screenshots</a>
+      <a href="#" class="btn-dark" id="nav-cta">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+        Download Free
+      </a>
+    </div>
   </nav>
+</div>
 
-  <div id="page-content"></div>
+<main>
+  <!-- ── Hero ── -->
+  <div class="hero-wrap">
+  <section class="hero" aria-labelledby="hero-heading">
+    <div class="hero-text">
+      <div class="hero-eyebrow">
+        <svg width="8" height="8" viewBox="0 0 8 8" fill="currentColor" aria-hidden="true"><circle cx="4" cy="4" r="4"/></svg>
+        Now Available on iPhone
+      </div>
 
-  <script>
-    // ─── Config — update these when the app goes live ───────────
-    const APPSTORE_URL      = '#'; // Replace with App Store link
-    const APP_SCHEME        = 'wwjd://login-callback';
-    // Get both values from Supabase dashboard → Project Settings → API
-    const SUPABASE_URL      = 'https://zyufdzqmvwrhtmiwpuka.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp5dWZkenFtdndyaHRtaXdwdWthIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2MzYzNzYsImV4cCI6MjA4OTIxMjM3Nn0.6AxctB-RJbi1Kskc_mbw42F8o6JyM5scs27xvayiaTI';
-    // ────────────────────────────────────────────────────────────
+      <h1 id="hero-heading">Bible Chat,<br>Study &amp; <em>Devotional.</em></h1>
 
-    const hash        = window.location.hash.substring(1);
-    const hashParams  = new URLSearchParams(hash);
-    const queryParams = new URLSearchParams(window.location.search);
-    const type        = queryParams.get('type') || hashParams.get('type');
-    const code        = queryParams.get('code');
-    const error       = queryParams.get('error') || hashParams.get('error');
-    const errorCode   = queryParams.get('error_code') || hashParams.get('error_code');
+      <p class="hero-sub">
+        Ask anything grounded in Scripture. Read 8 offline translations.
+        Grow daily with devotionals and plans built for real life.
+      </p>
 
-    function deepLink() {
-      const qs = window.location.search;
-      return APP_SCHEME + (qs ? qs : '') + (hash ? '#' + hash : '');
-    }
+      <div class="hero-ctas">
+        <a href="#" class="btn-gold" id="hero-cta" aria-label="Download Cana on the App Store">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+          Download Free
+        </a>
+      </div>
+      <p class="hero-note">Free · No subscription to read the Bible</p>
+    </div>
 
-    const appleIcon = `<svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
-    </svg>`;
+    <!-- Real screenshots in hero -->
+    <div class="hero-visual" aria-hidden="true">
+      <div class="hero-phone-primary">
+        <div class="iphone">
+          <img src="screenshots/ask.png" alt="Cana Ask feature — AI Bible chat screen" loading="eager" width="920" height="2000" />
+        </div>
+      </div>
+      <div class="hero-phone-secondary">
+        <div class="iphone">
+          <img src="screenshots/daily-verse.png" alt="Cana Daily Verse screen" loading="lazy" width="920" height="2000" />
+        </div>
+      </div>
+    </div>
+  </section>
+  </div>
 
-    // ─── Page renderers ──────────────────────────────────────────
+  <!-- ── Trust bar ── -->
+  <div class="trust-bar">
+    <div class="trust-inner">
+      <div class="trust-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        8 Bible Translations
+      </div>
+      <div class="trust-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 6v16l7-4 8 4 7-4V2l-7 4-8-4-7 4z"/><path d="M8 2v16"/><path d="M16 6v16"/></svg>
+        Read the Bible Offline
+      </div>
+      <div class="trust-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        Sign in with Apple · Private
+      </div>
+      <div class="trust-item">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        New Devotional Every Day
+      </div>
+    </div>
+  </div>
 
-    function renderLanding() {
-      document.getElementById('page-content').innerHTML = `
-        <section class="hero">
-          <div class="hero-tag">Now Available on iPhone</div>
-          <h1>What Would<br><em>Jesus Do?</em></h1>
-          <p>Daily Bible verses, AI-powered devotionals, and a space to explore your faith — one question at a time.</p>
-          <a href="${APPSTORE_URL}" class="hero-cta">${appleIcon} Download Free</a>
-          <div class="verse-card">
-            <div class="verse-label">✦ Verse of the Day</div>
-            <div class="verse-text">"I can do all things through Christ who strengthens me."</div>
-            <div class="verse-ref">— Philippians 4:13 (NIV)</div>
+  <!-- ── Features ── -->
+  <section class="features-section" id="features" aria-labelledby="features-heading">
+    <div class="features-header fade-up">
+      <p class="section-eyebrow">✦ What's Inside</p>
+      <h2 class="section-heading" id="features-heading">Everything you need<br>to grow in faith.</h2>
+    </div>
+    <div class="features-grid">
+
+      <div class="feature-card fade-up">
+        <div class="feature-icon" aria-hidden="true">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        </div>
+        <h3>Ask</h3>
+        <p>Chat with an AI grounded in Scripture. Get guidance, explore passages, and ask anything about your faith — answered with chapter and verse.</p>
+      </div>
+
+      <div class="feature-card fade-up">
+        <div class="feature-icon" aria-hidden="true">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+        </div>
+        <h3>Bible Reader</h3>
+        <p>All 66 books across 8 offline translations — KJV, BSB, WEB, ASV, and more. Clean, distraction-free typography built for reading.</p>
+      </div>
+
+      <div class="feature-card fade-up">
+        <div class="feature-icon" aria-hidden="true">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        </div>
+        <h3>Daily Verse</h3>
+        <p>Start each morning with a curated verse, devotional, and reflection question. A quiet moment with Scripture before the noise starts.</p>
+      </div>
+
+      <div class="feature-card fade-up">
+        <div class="feature-icon" aria-hidden="true">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/></svg>
+        </div>
+        <h3>Devotionals</h3>
+        <p>AI-guided devotional sessions and multi-day plans for whatever you're walking through — anxiety, gratitude, grief, doubt, and more.</p>
+      </div>
+
+      <div class="feature-card fade-up">
+        <div class="feature-icon" aria-hidden="true">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+        </div>
+        <h3>Saved Verses</h3>
+        <p>Bookmark passages that speak to you and add personal notes. Your highlights sync privately with iCloud — always there when you need them.</p>
+      </div>
+
+      <div class="feature-card fade-up">
+        <div class="feature-icon" aria-hidden="true">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <h3>Small Groups</h3>
+        <p>Study Scripture together. Share verses, reflections, and guided group prompts with your church small group or a circle of friends.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── Screenshots ── -->
+  <section class="screenshots-section" id="screenshots" aria-labelledby="screenshots-heading">
+    <div class="screenshots-inner">
+      <div class="screenshots-header fade-up">
+        <p class="section-eyebrow">✦ See It in Action</p>
+        <h2 class="section-heading" id="screenshots-heading">More than a Bible app.<br>Built for everyday faith.</h2>
+        <p class="section-sub">Five ways Cana meets you where you are.</p>
+      </div>
+
+      <div class="screenshots-grid">
+
+        <div class="screenshot-item fade-up">
+          <div class="iphone">
+            <img src="screenshots/daily-verse.png" alt="Daily Verse screen showing today's scripture and devotional" loading="lazy" width="920" height="2000" />
           </div>
-        </section>
-
-        <section class="features">
-          <div class="section-label">✦ What's Inside</div>
-          <h2>Everything you need to grow in faith.</h2>
-          <div class="features-grid">
-            <div class="feature-card">
-              <div class="feature-icon">📖</div>
-              <h3>Bible Reader</h3>
-              <p>Read Scripture in multiple translations with clean, distraction-free typography.</p>
-            </div>
-            <div class="feature-card">
-              <div class="feature-icon">✝️</div>
-              <h3>Ask WWJD</h3>
-              <p>Have a real conversation about your faith, struggles, and questions — guided by Scripture.</p>
-            </div>
-            <div class="feature-card">
-              <div class="feature-icon">☀️</div>
-              <h3>Daily Verse</h3>
-              <p>Start each morning with a verse, devotional, and reflection question curated for the day.</p>
-            </div>
-            <div class="feature-card">
-              <div class="feature-icon">🔖</div>
-              <h3>Saved Verses</h3>
-              <p>Bookmark passages that speak to you and add personal notes to revisit anytime.</p>
-            </div>
-          </div>
-        </section>
-
-        <div class="quote-strip">
-          <blockquote>"Your word is a lamp to my feet and a light to my path."</blockquote>
-          <cite>— Psalm 119:105</cite>
+          <p class="screenshot-label">Daily</p>
+          <p class="screenshot-title">Verse &amp; Devotional</p>
+          <p class="screenshot-desc">A curated verse, reflection, and devotional — every morning.</p>
         </div>
 
-        <section class="cta-section">
-          <h2>Begin your daily walk with Scripture.</h2>
-          <p>Free to download. No subscription required to read the Bible.</p>
-          <a href="${APPSTORE_URL}" class="hero-cta">${appleIcon} Get the App</a>
-        </section>
-
-        <footer>
-          <span>© ${new Date().getFullYear()} WWJD. Made with faith.</span>
-          <a href="mailto:support@wwjdapp.com">Support</a>
-        </footer>
-      `;
-    }
-
-    function renderEmailConfirmed() {
-      const link = deepLink();
-      document.getElementById('page-content').innerHTML = `
-        <div class="auth-page">
-          <div class="auth-card">
-
-            <svg class="check-ring" viewBox="0 0 80 80" aria-hidden="true">
-              <circle class="check-bg" cx="40" cy="40" r="36"/>
-              <circle class="check-arc" cx="40" cy="40" r="36"/>
-              <polyline points="24,41 35,52 56,30"/>
-            </svg>
-
-            <h1>Email Confirmed!</h1>
-            <p class="auth-sub">
-              You're all set. Your WWJD account is verified and ready to go.
-              Open the app on your iPhone to begin your daily walk with Scripture.
-            </p>
-
-            <a href="${link}" class="open-app-btn" id="open-app-link">
-              ${appleIcon} Open the WWJD App
-            </a>
-
-            <p class="auth-redirect-note" id="redirect-note">
-              Opening automatically in <strong id="countdown">5</strong>s&hellip;
-            </p>
-
-            <div class="auth-verse">
-              <blockquote>
-                "Therefore, if anyone is in Christ, the new creation has come:
-                the old has gone, the new is here!"
-              </blockquote>
-              <cite>2 Corinthians 5:17</cite>
-            </div>
-
-            <p class="auth-download-hint">
-              Don't have the app yet?
-              <a href="${APPSTORE_URL}">Download it on the App Store.</a>
-            </p>
-
+        <div class="screenshot-item fade-up">
+          <div class="iphone">
+            <img src="screenshots/bible-reader.png" alt="Bible Reader showing Job 12 in KJV with verse numbers" loading="lazy" width="920" height="2000" />
           </div>
+          <p class="screenshot-label">Bible</p>
+          <p class="screenshot-title">8 Translations, Offline</p>
+          <p class="screenshot-desc">Read KJV, BSB, WEB, and five more. The whole Bible, no Wi-Fi needed.</p>
         </div>
-        <div class="auth-footer">© ${new Date().getFullYear()} WWJD &middot; Made with faith.</div>
-      `;
 
-      let secs = 5;
-      const countEl = document.getElementById('countdown');
-      const noteEl  = document.getElementById('redirect-note');
-      const timer = setInterval(() => {
-        secs--;
-        if (secs <= 0) {
-          clearInterval(timer);
-          noteEl.textContent = 'Redirecting\u2026';
-          window.location.href = link;
-        } else {
-          countEl.textContent = secs;
-        }
-      }, 1000);
+        <div class="screenshot-item fade-up">
+          <div class="iphone">
+            <img src="screenshots/ask.png" alt="Ask screen showing a scripture-grounded AI conversation about rest" loading="lazy" width="920" height="2000" />
+          </div>
+          <p class="screenshot-label">Ask</p>
+          <p class="screenshot-title">Scripture-Grounded AI</p>
+          <p class="screenshot-desc">Ask anything about faith or life. Every answer cites chapter and verse.</p>
+        </div>
 
-      document.getElementById('open-app-link').addEventListener('click', () => {
-        clearInterval(timer);
-        noteEl.textContent = '';
+        <div class="screenshot-item fade-up">
+          <div class="iphone">
+            <img src="screenshots/devotional-plan.png" alt="Devotional Plan showing a multi-day study with daily verses" loading="lazy" width="920" height="2000" />
+          </div>
+          <p class="screenshot-label">Plans</p>
+          <p class="screenshot-title">Multi-Day Plans</p>
+          <p class="screenshot-desc">Guided plans for what you're walking through — anxiety, doubt, gratitude, grief.</p>
+        </div>
+
+        <div class="screenshot-item fade-up">
+          <div class="iphone">
+            <img src="screenshots/small-groups.png" alt="Small Groups feature showing Tonight's Prompt for group Bible study" loading="lazy" width="920" height="2000" />
+          </div>
+          <p class="screenshot-label">Groups</p>
+          <p class="screenshot-title">Small Group Study</p>
+          <p class="screenshot-desc">Run guided sessions with friends — icebreaker, Word, prayer, and challenge.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Quote ── -->
+  <section class="quote-section" aria-label="Scripture">
+    <span class="quote-mark" aria-hidden="true">"</span>
+    <blockquote>
+      So faith comes from hearing, and hearing through the word of Christ.
+    </blockquote>
+    <cite>— Romans 10:17</cite>
+  </section>
+
+  <!-- ── CTA ── -->
+  <section class="cta-section" aria-labelledby="cta-heading">
+    <p class="section-eyebrow">✦ Begin Today</p>
+    <h2 class="section-heading" id="cta-heading">Your daily walk with Scripture starts here.</h2>
+    <p class="section-sub">Free to download. Read the whole Bible offline. No subscription.</p>
+    <a href="#" class="btn-gold" id="cta-bottom" aria-label="Download Cana on the App Store">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+      Download Free on the App Store
+    </a>
+    <p class="hero-note" style="margin-top:20px">Sign in with Apple · iCloud sync</p>
+  </section>
+</main>
+
+<!-- ── Footer ── -->
+<footer>
+  <span>© <span id="year"></span> Cana. Made with faith.</span>
+  <div class="footer-links">
+    <a href="mailto:support@canaapp.com">Support</a>
+  </div>
+</footer>
+
+<script>
+  const APPSTORE_URL = '#'; // Replace with App Store link
+
+  ['nav-cta','hero-cta','cta-bottom'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.href = APPSTORE_URL;
+  });
+
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  // Sticky nav shadow
+  const navWrap = document.getElementById('nav-wrap');
+  window.addEventListener('scroll', () => {
+    navWrap.classList.toggle('scrolled', window.scrollY > 8);
+  }, { passive: true });
+
+  // Scroll-triggered fade-up with stagger for grid children
+  if (window.matchMedia('(prefers-reduced-motion: no-preference)').matches) {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        const el = entry.target;
+        const siblings = el.parentElement.querySelectorAll('.fade-up');
+        const index = Array.from(siblings).indexOf(el);
+        const isGrid = el.parentElement.classList.contains('features-grid') ||
+                       el.parentElement.classList.contains('screenshots-grid');
+        const delay = isGrid ? index * 70 : 0;
+        setTimeout(() => el.classList.add('visible'), delay);
+        observer.unobserve(el);
       });
-    }
+    }, { threshold: 0.10 });
 
-    function showLoading() {
-      document.getElementById('page-content').innerHTML = `
-        <div class="auth-page">
-          <div class="auth-card">
-            <div class="auth-loading">
-              <div class="auth-spinner"></div>
-              <p>Verifying your link&hellip;</p>
-            </div>
-          </div>
-        </div>
-      `;
-    }
-
-    function renderPasswordResetForm(sb) {
-      const link = deepLink();
-      document.getElementById('page-content').innerHTML = `
-        <div class="auth-page">
-          <div class="auth-card">
-
-            <svg class="check-ring" viewBox="0 0 80 80" aria-hidden="true">
-              <circle class="check-bg" cx="40" cy="40" r="36"/>
-              <circle class="check-arc" cx="40" cy="40" r="36"/>
-              <polyline points="24,41 35,52 56,30"/>
-            </svg>
-
-            <h1>Reset Your Password</h1>
-            <p class="auth-sub">Enter a new password for your WWJD account.</p>
-
-            <div id="auth-error" class="auth-error-msg" style="display:none"></div>
-
-            <form class="auth-form" id="reset-form" onsubmit="return false">
-              <div class="auth-field">
-                <label for="pw-new">New Password</label>
-                <input type="password" id="pw-new" placeholder="At least 8 characters" autocomplete="new-password" />
-              </div>
-              <div class="auth-field">
-                <label for="pw-confirm">Confirm Password</label>
-                <input type="password" id="pw-confirm" placeholder="Repeat your new password" autocomplete="new-password" />
-              </div>
-              <button class="auth-submit" id="reset-submit" type="submit">Update Password</button>
-            </form>
-
-            <div class="or-divider">or</div>
-            <a href="${link}" class="open-app-link">${appleIcon}&nbsp;Open in WWJD App (iPhone)</a>
-
-            <div class="auth-verse" style="margin-top:24px">
-              <blockquote>"Create in me a pure heart, O God, and renew a steadfast spirit within me."</blockquote>
-              <cite>Psalm 51:10</cite>
-            </div>
-
-          </div>
-        </div>
-        <div class="auth-footer">© ${new Date().getFullYear()} WWJD &middot; Made with faith.</div>
-      `;
-
-      const errorEl   = document.getElementById('auth-error');
-      const submitBtn = document.getElementById('reset-submit');
-
-      document.getElementById('reset-form').addEventListener('submit', async () => {
-        const pw  = document.getElementById('pw-new').value;
-        const cpw = document.getElementById('pw-confirm').value;
-
-        errorEl.style.display = 'none';
-
-        if (pw.length < 8) {
-          errorEl.textContent = 'Password must be at least 8 characters.';
-          errorEl.style.display = 'block';
-          return;
-        }
-        if (pw !== cpw) {
-          errorEl.textContent = 'Passwords do not match.';
-          errorEl.style.display = 'block';
-          return;
-        }
-
-        submitBtn.disabled = true;
-        submitBtn.textContent = 'Updating\u2026';
-
-        const { error: updErr } = await sb.auth.updateUser({ password: pw });
-
-        if (updErr) {
-          errorEl.textContent = updErr.message || 'Something went wrong. Please try again.';
-          errorEl.style.display = 'block';
-          submitBtn.disabled = false;
-          submitBtn.textContent = 'Update Password';
-          return;
-        }
-
-        // Success
-        document.getElementById('page-content').innerHTML = `
-          <div class="auth-page">
-            <div class="auth-card">
-              <svg class="check-ring" viewBox="0 0 80 80" aria-hidden="true">
-                <circle class="check-bg" cx="40" cy="40" r="36"/>
-                <circle class="check-arc" cx="40" cy="40" r="36"/>
-                <polyline points="24,41 35,52 56,30"/>
-              </svg>
-              <h1>Password Updated!</h1>
-              <p class="auth-sub">Your password has been changed. Open the WWJD app to sign in with your new password.</p>
-              <a href="${link}" class="open-app-btn">${appleIcon} Open the WWJD App</a>
-              <div class="auth-verse" style="margin-top:20px">
-                <blockquote>"His mercies are new every morning."</blockquote>
-                <cite>Lamentations 3:23</cite>
-              </div>
-            </div>
-          </div>
-          <div class="auth-footer">© ${new Date().getFullYear()} WWJD &middot; Made with faith.</div>
-        `;
-      });
-    }
-
-    async function initAndRoute() {
-      showLoading();
-
-      const { createClient } = window.supabase;
-      const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-        auth: { flowType: 'pkce' }
-      });
-
-      // Guard against the auth-state listener firing multiple times
-      let routed = false;
-      const routeTo = (fn) => { if (!routed) { routed = true; fn(); } };
-
-      // Listen BEFORE exchanging so we catch the event.
-      // Note: implicit flow fires SIGNED_IN (not PASSWORD_RECOVERY) on setSession,
-      // so fall back to checking the type param from the URL.
-      sb.auth.onAuthStateChange((event) => {
-        if (event === 'PASSWORD_RECOVERY') {
-          routeTo(() => renderPasswordResetForm(sb));
-        } else if (event === 'SIGNED_IN') {
-          if (type === 'recovery') routeTo(() => renderPasswordResetForm(sb));
-          else routeTo(renderEmailConfirmed);
-        }
-      });
-
-      if (code) {
-        const { error: exchErr } = await sb.auth.exchangeCodeForSession(code);
-        if (exchErr) {
-          routeTo(() => renderLinkExpired(exchErr.code || 'invalid'));
-        } else if (!routed) {
-          // Exchange succeeded but no auth event fired — shouldn't happen,
-          // but fall back gracefully
-          routeTo(renderEmailConfirmed);
-        }
-      } else if (hashParams.get('access_token')) {
-        // Implicit-flow tokens — setSession fires SIGNED_IN regardless of type,
-        // so use the type param from the URL directly instead of the auth event.
-        const { error: sessErr } = await sb.auth.setSession({
-          access_token: hashParams.get('access_token'),
-          refresh_token: hashParams.get('refresh_token') || ''
-        });
-        if (sessErr) {
-          routeTo(() => renderLinkExpired('invalid'));
-        } else if (type === 'recovery') {
-          routeTo(() => renderPasswordResetForm(sb));
-        } else {
-          routeTo(renderEmailConfirmed);
-        }
-      }
-    }
-
-    function renderLinkExpired(errorCode) {
-      const isExpired = !errorCode || errorCode === 'otp_expired';
-      const heading   = isExpired ? 'Link Expired'      : 'Link Invalid';
-      const message   = isExpired
-        ? 'This confirmation link has expired. Email links are single-use and valid for a limited time. Open the app and sign in again to receive a fresh link.'
-        : 'This confirmation link is invalid or has already been used. Open the app and sign in again to receive a new one.';
-
-      document.getElementById('page-content').innerHTML = `
-        <div class="auth-page">
-          <div class="auth-card">
-
-            <svg class="check-ring" viewBox="0 0 80 80" aria-hidden="true">
-              <circle class="check-bg" cx="40" cy="40" r="36"/>
-              <circle class="check-arc" cx="40" cy="40" r="36" style="stroke:#c0763a"/>
-              <line x1="28" y1="28" x2="52" y2="52" stroke="#c0763a" stroke-width="3.5" stroke-linecap="round"
-                stroke-dasharray="34" stroke-dashoffset="34"
-                style="animation:check-draw 0.4s cubic-bezier(0.4,0,0.2,1) 0.65s forwards"/>
-              <line x1="52" y1="28" x2="28" y2="52" stroke="#c0763a" stroke-width="3.5" stroke-linecap="round"
-                stroke-dasharray="34" stroke-dashoffset="34"
-                style="animation:check-draw 0.4s cubic-bezier(0.4,0,0.2,1) 0.75s forwards"/>
-            </svg>
-
-            <h1 style="color:#7a3a10">${heading}</h1>
-            <p class="auth-sub">${message}</p>
-
-            <a href="${deepLink()}" class="open-app-btn">
-              ${appleIcon} Open the WWJD App
-            </a>
-
-            <div class="auth-verse">
-              <blockquote>"Ask and it will be given to you; seek and you will find."</blockquote>
-              <cite>Matthew 7:7</cite>
-            </div>
-
-          </div>
-        </div>
-        <div class="auth-footer">© ${new Date().getFullYear()} WWJD &middot; Made with faith.</div>
-      `;
-    }
-
-    // ─── Router ──────────────────────────────────────────────────
-    if (error) {
-      renderLinkExpired(errorCode);
-    } else if (code || (type === 'recovery' && hashParams.get('access_token'))) {
-      // Use the SDK to exchange the code and detect whether it's a
-      // password recovery or an email confirmation — can't tell from URL alone.
-      initAndRoute();
-    } else if (type === 'signup' || type === 'email_change' || type === 'email') {
-      renderEmailConfirmed();
-    } else {
-      renderLanding();
-    }
-
-    document.getElementById('nav-appstore-link').href = APPSTORE_URL;
-  </script>
+    document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+  } else {
+    document.querySelectorAll('.fade-up').forEach(el => el.classList.add('visible'));
+  }
+</script>
 
 </body>
 </html>
