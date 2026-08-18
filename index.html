@@ -369,6 +369,46 @@
       .trust-inner { gap: 16px; }
       .trust-item { font-size: 13px; }
     }
+  
+    /* ── Pricing ── */
+    .pricing-section { padding: 96px 5%; max-width: 1100px; margin: 0 auto; }
+    .pricing-header { margin-bottom: 48px; }
+    .pricing-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; align-items: start;
+    }
+    .plan {
+      background: #fff; border: 1px solid var(--parchment);
+      border-radius: var(--radius-lg); padding: 32px 30px;
+      box-shadow: var(--shadow-sm);
+    }
+    .plan.featured {
+      background: var(--gold-faint);
+      border-color: rgba(217,179,89,0.55);
+      box-shadow: var(--shadow-md);
+    }
+    .plan-name {
+      font-size: 0.78rem; font-weight: 700; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--gold-deep); margin-bottom: 12px;
+    }
+    .plan-price { font-size: 2.1rem; font-weight: 700; letter-spacing: -0.02em; }
+    .plan-price span { font-size: 1rem; font-weight: 500; color: var(--muted); }
+    .plan-note { color: var(--muted); margin: 6px 0 22px; font-size: 0.94rem; }
+    .plan ul { list-style: none; }
+    .plan li {
+      position: relative; padding-left: 26px; margin-bottom: 11px;
+      color: var(--text); font-size: 0.97rem;
+    }
+    .plan li::before {
+      content: "✓"; position: absolute; left: 0; top: 0;
+      color: var(--gold-deep); font-weight: 700;
+    }
+    .pricing-foot {
+      margin-top: 28px; text-align: center; color: var(--muted); font-size: 0.94rem;
+    }
+    @media (max-width: 760px) {
+      .pricing-grid { grid-template-columns: 1fr; }
+    }
+
   </style>
 </head>
 <body>
@@ -380,6 +420,7 @@
     <div class="nav-right">
       <a href="#features" class="nav-link">Features</a>
       <a href="#screenshots" class="nav-link">Screenshots</a>
+      <a href="#pricing" class="nav-link">Pricing</a>
       <a href="#" class="btn-dark" id="nav-cta">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
         Download Free
@@ -572,6 +613,48 @@
   </section>
 
   <!-- ── Quote ── -->
+
+  <section class="pricing-section" id="pricing" aria-labelledby="pricing-heading">
+    <div class="pricing-header fade-up">
+      <p class="section-eyebrow">✦ Pricing</p>
+      <h2 class="section-heading" id="pricing-heading">Scripture stays free.<br>Always.</h2>
+    </div>
+
+    <div class="pricing-grid">
+      <div class="plan fade-up">
+        <div class="plan-name">Free</div>
+        <div class="plan-price">$0</div>
+        <p class="plan-note">No account needed to read.</p>
+        <ul>
+          <li>The whole Bible, 8 translations, fully offline</li>
+          <li>33,000+ verse explanations, written in advance</li>
+          <li>Verse of the day, with a home screen widget</li>
+          <li>Unlimited bookmarks</li>
+          <li>Join any group and take part fully</li>
+          <li>5 Ask conversations a day</li>
+        </ul>
+      </div>
+
+      <div class="plan featured fade-up">
+        <div class="plan-name">Cana Plus</div>
+        <div class="plan-price">$4.99<span> / month</span></div>
+        <p class="plan-note">or $39.99 a year · 7 days free</p>
+        <ul>
+          <li>Unlimited Ask conversations</li>
+          <li>Multi-day devotion plans, built around what you're facing</li>
+          <li>Guided devotionals from any conversation</li>
+          <li>Create and lead your own groups</li>
+          <li>AI study guides for whatever your group is reading</li>
+        </ul>
+      </div>
+    </div>
+
+    <p class="pricing-foot">
+      Leading a group is the paid part — everyone you invite joins free, and the whole
+      group gets the study guides.
+    </p>
+  </section>
+
   <section class="quote-section" aria-label="Scripture">
     <span class="quote-mark" aria-hidden="true">"</span>
     <blockquote>
@@ -597,7 +680,8 @@
 <footer>
   <span>© <span id="year"></span> Cana. Made with faith.</span>
   <div class="footer-links">
-    <a href="mailto:support@canaapp.com">Support</a>
+    <a href="/support">Support</a>
+    <a href="/privacy">Privacy</a>
   </div>
 </footer>
 
