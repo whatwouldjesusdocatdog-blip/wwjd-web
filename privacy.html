@@ -78,10 +78,10 @@
 <header>
   <a class="back" href="/">← Cana</a>
   <h1>Privacy Policy</h1>
-  <div class="updated">Last updated 18 August 2026</div>
+  <div class="updated">Last updated 8 October 2026</div>
 </header>
 
-<p>Cana is a Bible reading, study, and small-group app. This policy explains what we
+<p>Cana is a Catholic Bible reading, study, and small-group app. This policy explains what we
 collect, what we don't, and who else is involved.</p>
 
 <p>It's written to be specific rather than exhaustive. If anything here is unclear,
@@ -94,8 +94,11 @@ email us — the address is at the bottom.</p>
       We cannot read them.</li>
     <li>Your <strong>groups</strong> — names, prayer requests, shared notes — are
       stored on our servers, because other members need to see them.</li>
-    <li>Messages you send in <strong>Ask</strong> are forwarded to Anthropic to
-      generate a reply. They are <strong>not used to train any AI model</strong>.</li>
+    <li>Cana uses two AI services. Messages you send in <strong>Ask</strong> go to
+      <strong>Anthropic</strong>, which doesn't use them to train AI models.
+      <strong>Devotionals, devotion plans and group studies</strong> are written by
+      <strong>Magisterium AI</strong>, which may keep what it receives under its own
+      policy. We never send either service your name, email, or account.</li>
     <li>We never see your payment details. Apple handles all purchases.</li>
     <li>We don't sell your data, and we don't run advertising.</li>
   </ul>
@@ -131,18 +134,45 @@ only ever receive Apple's relay address, never your real one.</p>
 a prayer request, a shared note — is visible to every member of that group. Notes you
 mark private stay on your device and in your iCloud, and are never uploaded.</p>
 
-<h2>Ask conversations and AI</h2>
+<h2>AI features</h2>
 
-<p>When you use <strong>Ask</strong>, request a verse explanation that isn't already
-bundled with the app, or generate a group study guide, the relevant text is sent to
-<strong>Anthropic</strong> (the makers of Claude) to generate a response.</p>
+<p>Cana uses two AI services to write its responses. Requests go through our own
+server, so your device never contacts either service directly, and <strong>we never
+send your name, email address, or account identifier</strong> — only the text needed
+for the response.</p>
 
+<h3>Anthropic (Claude)</h3>
+<p>Used for <strong>Ask</strong>, and for verse explanations that aren't already
+bundled with the app. What's sent: your Ask messages and the conversation so far, or
+the verse being explained.</p>
 <ul>
-  <li>Requests go through our own server, so your device never contacts Anthropic directly.</li>
-  <li><strong>Your conversations are not used to train AI models.</strong></li>
-  <li>We do not store your Ask conversations on our servers. The transcript lives in your
-    iCloud; our server keeps only a count of messages sent, for free-tier limits.</li>
+  <li><strong>Anthropic does not use this content to train AI models.</strong></li>
 </ul>
+
+<h3>Magisterium AI (Longbeard)</h3>
+<p>Used for <strong>devotionals, devotion plans, and group study guides</strong>, which
+it writes from the Church's documents and the Fathers. What's sent:</p>
+<ul>
+  <li>for a <strong>devotional</strong>: the Ask conversation it's made from, so it can
+    speak to what you're going through;</li>
+  <li>for a <strong>devotion plan</strong>: the topic you choose, and the conversation
+    too if you made the plan from one;</li>
+  <li>for a <strong>group study</strong>: the Bible passages chosen for the session.</li>
+</ul>
+<p>Magisterium AI processes requests with its own AI providers (including Microsoft
+Azure OpenAI, Google Gemini and Groq), which its policy says do not train on them and
+may keep them for up to 30 days. <strong>Magisterium AI may store what it receives and
+use it to improve its service</strong>, as described in its
+<a href="https://www.magisterium.com/privacy-policy">privacy policy</a>. If you'd rather
+your conversations weren't shared this way, don't create devotionals or plans from them
+— reading, Ask, and the rest of Cana work without it.</p>
+<p>If Magisterium AI is unavailable, the same request is sent to Anthropic instead.</p>
+
+<h3>What we keep</h3>
+<p>We do not store your Ask conversations or AI responses on our servers. Your
+conversations, devotionals and plans live in your iCloud; our server keeps only a count
+of how many messages you've sent, for free-tier limits. Group study guides are stored
+with the group, so its members can see them.</p>
 
 <p>Cana is not a substitute for pastoral care, counselling, or medical or mental health
 treatment. If you tell it something suggesting you may be at risk of harm, it will
@@ -183,7 +213,8 @@ If you believe a child has provided us information, contact us and we'll delete 
   <tr><th>Provider</th><th>Purpose</th></tr>
   <tr><td>Apple</td><td>Sign in with Apple, iCloud storage, payments</td></tr>
   <tr><td>Google Firebase</td><td>Accounts, group data, subscription state</td></tr>
-  <tr><td>Anthropic</td><td>Generating AI responses</td></tr>
+  <tr><td>Anthropic</td><td>AI responses in Ask, and verse explanations</td></tr>
+  <tr><td>Magisterium AI (Longbeard)</td><td>Devotionals, devotion plans, and group study guides</td></tr>
   <tr><td>PostHog</td><td>Product analytics</td></tr>
 </table>
 </div>
