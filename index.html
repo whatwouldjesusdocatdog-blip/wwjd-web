@@ -183,6 +183,32 @@
     .hero-phone-primary .iphone img { max-height: 440px; object-position: top; }
     .hero-phone-secondary .iphone img { max-height: 380px; object-position: top; }
 
+
+    /* ── Advent (in season only: Nov 15 – Dec 25, or ?advent to preview) ── */
+    .advent-section { display: none; background: linear-gradient(180deg, #F4EEF7 0%, var(--cream) 100%); border-bottom: 1px solid var(--parchment-2); padding: 72px 5%; }
+    .advent-section.in-season { display: block; }
+    .advent-inner { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 56px; align-items: center; }
+    .advent-wreath { display: flex; justify-content: center; }
+    .advent-wreath svg { width: min(320px, 80%); height: auto; }
+    .advent-eyebrow { display: inline-flex; font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #6B3F86; background: #EDE3F2; border: 1px solid rgba(107,63,134,0.25); padding: 5px 14px; border-radius: 999px; margin-bottom: 20px; }
+    .advent-section h2 { font-family: Georgia, serif; font-size: clamp(30px, 4vw, 44px); line-height: 1.15; color: var(--brown); margin-bottom: 14px; }
+    .advent-section h2 em { font-style: italic; color: #6B3F86; }
+    .advent-lead { color: var(--muted); font-size: 17px; line-height: 1.7; margin-bottom: 26px; max-width: 520px; }
+    .advent-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 28px; }
+    .advent-col { background: #fff; border: 1px solid var(--parchment-2); border-radius: var(--radius); padding: 18px 18px 16px; box-shadow: var(--shadow-sm); }
+    .advent-col h3 { font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--gold-deep); margin-bottom: 10px; }
+    .advent-col.plus h3 { color: #6B3F86; }
+    .advent-col ul { list-style: none; display: grid; gap: 8px; }
+    .advent-col li { font-size: 14px; line-height: 1.5; color: var(--text); padding-left: 18px; position: relative; }
+    .advent-col li::before { content: "✦"; position: absolute; left: 0; top: 0; font-size: 10px; color: var(--gold); }
+    .advent-col.plus li::before { color: #9B6BB8; }
+    .advent-flame { opacity: 0; transition: opacity 400ms; }
+    .advent-flame.lit { opacity: 1; }
+    @media (max-width: 820px) {
+      .advent-inner { grid-template-columns: 1fr; gap: 28px; text-align: left; }
+      .advent-cols { grid-template-columns: 1fr; }
+    }
+
     /* ── Trust bar ── */
     .trust-bar {
       background: var(--parchment);
@@ -493,6 +519,52 @@
     </div>
   </div>
 
+
+  <!-- ── Advent: shown Nov 15 – Dec 25 (script below), or with ?advent ── -->
+  <section class="advent-section" id="advent" aria-labelledby="advent-heading">
+    <div class="advent-inner">
+      <div class="advent-wreath" aria-hidden="true">
+        <svg viewBox="0 0 320 230" role="img">
+          <g id="advent-candles">
+            <g><path class="advent-flame" d="M76 44c-7-10 0-20 0-26 5 7 12 15 0 26z" fill="#D9B359"/><rect x="66" y="52" width="20" height="104" rx="4" fill="#73408F"/></g>
+            <g><path class="advent-flame" d="M136 34c-7-10 0-20 0-26 5 7 12 15 0 26z" fill="#D9B359"/><rect x="126" y="42" width="20" height="114" rx="4" fill="#73408F"/></g>
+            <g><path class="advent-flame" d="M186 34c-7-10 0-20 0-26 5 7 12 15 0 26z" fill="#D9B359"/><rect x="176" y="42" width="20" height="114" rx="4" fill="#E58CA6"/></g>
+            <g><path class="advent-flame" d="M246 44c-7-10 0-20 0-26 5 7 12 15 0 26z" fill="#D9B359"/><rect x="236" y="52" width="20" height="104" rx="4" fill="#73408F"/></g>
+          </g>
+          <ellipse cx="160" cy="170" rx="140" ry="30" fill="#2F5C3A"/>
+          <ellipse cx="160" cy="164" rx="128" ry="22" fill="#3C7449"/>
+          <circle cx="62" cy="166" r="6" fill="#B71F2A"/><circle cx="118" cy="178" r="6" fill="#B71F2A"/>
+          <circle cx="204" cy="178" r="6" fill="#B71F2A"/><circle cx="258" cy="166" r="6" fill="#B71F2A"/>
+        </svg>
+      </div>
+      <div>
+        <span class="advent-eyebrow" id="advent-eyebrow">Advent · Nov 29 – Dec 24</span>
+        <h2 id="advent-heading">Keep Advent<br><em>with the Church.</em></h2>
+        <p class="advent-lead">Four weeks of waiting for Christ, day by day: the Mass readings, a wreath that lights week by week, and the Church's own Advent prayers.</p>
+        <div class="advent-cols">
+          <div class="advent-col">
+            <h3>Free for everyone</h3>
+            <ul>
+              <li>Each day's Mass readings and Gospel reflection</li>
+              <li>A meditation on each day's Gospel</li>
+              <li>The Novena to the Immaculate Conception</li>
+              <li>The O Antiphons, Dec 17–23</li>
+            </ul>
+          </div>
+          <div class="advent-col plus">
+            <h3>Your Advent journey · Plus</h3>
+            <ul>
+              <li>An intention for the season</li>
+              <li>A meditation for each day on that day's readings</li>
+              <li>On Christmas Eve, your Advent to keep</li>
+            </ul>
+          </div>
+        </div>
+        <a href="#" class="btn-gold" id="advent-cta" aria-label="Download Cana on the App Store for Advent">Download Cana</a>
+      </div>
+    </div>
+  </section>
+
   <!-- ── Features ── -->
   <section class="features-section" id="features" aria-labelledby="features-heading">
     <div class="features-header fade-up">
@@ -764,6 +836,7 @@
           <li>Guided meditations from any conversation</li>
           <li>Create and lead your own groups</li>
           <li>AI study guides for whatever your group is reading</li>
+          <li>Seasonal journeys: a meditation for each day of Advent</li>
         </ul>
       </div>
     </div>
@@ -808,12 +881,31 @@
 <script>
   const APPSTORE_URL = 'https://apps.apple.com/us/app/cana-bible-study/id6766018597';
 
-  ['nav-cta','hero-cta','cta-bottom'].forEach(id => {
+  ['nav-cta','hero-cta','cta-bottom','advent-cta'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.href = APPSTORE_URL;
   });
 
   document.getElementById('year').textContent = new Date().getFullYear();
+
+  // Advent: from Nov 15 (as the In-App Event begins showing) through Christmas Day,
+  // or any day with ?advent. The candles follow the weeks: Advent begins on the fourth
+  // Sunday before Christmas.
+  (function () {
+    const now = new Date(), y = now.getFullYear();
+    const christmas = new Date(y, 11, 25);
+    const back = christmas.getDay() === 0 ? 7 : christmas.getDay();
+    const first = new Date(y, 11, 25 - back - 21);
+    const preview = new URLSearchParams(location.search).has('advent');
+    const inSeason = now >= new Date(y, 10, 15) && now < new Date(y, 11, 26);
+    if (!inSeason && !preview) return;
+    document.getElementById('advent').classList.add('in-season');
+    const fmt = (d) => d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    document.getElementById('advent-eyebrow').textContent = 'Advent · ' + fmt(first) + ' – Dec 24';
+    const days = Math.floor((now - first) / 86400000);
+    const lit = preview && days < 0 ? 2 : days < 0 ? 0 : Math.min(4, Math.floor(days / 7) + 1);
+    document.querySelectorAll('.advent-flame').forEach((f, i) => f.classList.toggle('lit', i < lit));
+  })();
 
   // Sticky nav shadow
   const navWrap = document.getElementById('nav-wrap');
