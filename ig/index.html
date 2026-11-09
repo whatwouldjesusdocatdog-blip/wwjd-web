@@ -9,6 +9,9 @@
      token so App Store Connect counts these downloads as from Instagram. -->
 <meta http-equiv="refresh" content="0; url=https://apps.apple.com/app/apple-store/id6766018597?pt=128798366&amp;ct=instagram&amp;mt=8" />
 <link rel="canonical" href="https://cana.bible/" />
+<!-- Counts the tap (PostHog, no cookies, nothing stored), so we can see which profile sends people,
+     even when they don't download. Sent as a beacon so it never delays the redirect. -->
+<script>try{navigator.sendBeacon("https://us.i.posthog.com/i/v0/e/",JSON.stringify({api_key:"phc_uuuuji5W4MeU27YNicLpUygdCk2oCHCUZVe6qrGNB62A",event:"bio_link_tap",distinct_id:"web-"+Math.random().toString(36).slice(2),properties:{link:"ig",referrer:document.referrer||null,$process_person_profile:false}}))}catch(e){}</script>
 <script>location.replace("https://apps.apple.com/app/apple-store/id6766018597?pt=128798366&ct=instagram&mt=8");</script>
 <style>body{font-family:-apple-system,system-ui,sans-serif;background:#faf5e6;color:#40260d;display:flex;min-height:100vh;align-items:center;justify-content:center;margin:0}a{color:#8a5a12}</style>
 </head>
