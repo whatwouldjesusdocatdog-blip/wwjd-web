@@ -337,6 +337,14 @@
     }
 
     /* ── CTA ── */
+    /* Android banner, above the nav */
+    .android-banner {
+      display: block; padding: 9px 5%; text-align: center; font-size: 13px; line-height: 1.4;
+      background: var(--brown); color: var(--cream); text-decoration: none;
+    }
+    .android-banner strong { color: var(--gold-light); font-weight: 600; }
+    .android-banner:hover strong, .android-banner:focus-visible strong { text-decoration: underline; }
+
     /* Android waiting list */
     .android-section { padding: 64px 5% 72px; background: var(--parchment); border-top: 1px solid var(--parchment-2); text-align: center; }
     .android-section .section-sub { margin: 12px auto 28px; }
@@ -353,8 +361,6 @@
     .android-status.ok { color: var(--gold-deep); font-weight: 600; }
     .android-fine { margin-top: 6px; font-size: 12px; color: var(--muted-lt); }
     .android-fine a { color: inherit; }
-    .hero-android { display: inline-block; margin-top: 10px; font-size: 13px; color: var(--muted); }
-    .hero-android a { color: var(--gold-deep); font-weight: 600; }
 
     .cta-section {
       padding: 96px 5%; text-align: center;
@@ -459,6 +465,7 @@
 <body>
 
 <!-- ── Nav ── -->
+<a class="android-banner" href="#android">Cana for Android is coming. <strong>Join the waiting list →</strong></a>
 <div class="nav-wrap" id="nav-wrap">
   <nav>
     <a href="#" class="nav-logo">Cana</a>
@@ -498,7 +505,6 @@
         </a>
       </div>
       <p class="hero-note">Free · No subscription to read the Bible</p>
-      <p class="hero-android">On Android? <a href="#android">Join the waiting list</a></p>
     </div>
 
     <!-- Real screenshots in hero -->
@@ -926,23 +932,11 @@
 
   document.getElementById('year').textContent = new Date().getFullYear();
 
-  // Android: the waiting list. An Android visitor's App Store buttons lead there instead.
+  // Android: the waiting list. The App Store buttons stay as they are for everyone, so
+  // no one thinks Cana isn't out; the banner at the top points Android visitors here.
   (function () {
     const ENDPOINT = 'https://us-central1-cana-bible.cloudfunctions.net/androidWaitlist';
     const isAndroid = /Android/i.test(navigator.userAgent);
-    if (isAndroid) {
-      ['hero-cta', 'cta-bottom', 'advent-cta'].forEach(id => {
-        const el = document.getElementById(id);
-        if (!el) return;
-        el.href = '#android';
-        el.textContent = 'Get Android updates';
-        el.setAttribute('aria-label', 'Join the Android waiting list');
-      });
-      const nav = document.getElementById('nav-cta');
-      if (nav) { nav.href = '#android'; nav.textContent = 'Android list'; }
-      document.querySelector('.hero-note').textContent = 'On iPhone now · Android coming';
-      document.querySelector('.hero-android').style.display = 'none';
-    }
 
     const form = document.getElementById('android-form');
     const status = document.getElementById('android-status');
